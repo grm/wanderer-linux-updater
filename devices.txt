@@ -1,0 +1,7 @@
+WandererRotatorMini;m328p;arduino;115200
+WandererRotatorLite(Old);m328p;arduino;115200
+WandererRotatorLite(New);m328p;arduino;57600
+WandererRotatorPro;m328p;arduino;57600
+WandererBoxPlusV2;m168p;arduino;115200
+WandererBoxUltimateV2(Old);m328p;arduino;57600
+WandererCoverV3(Pro);m168p;arduino;115200
