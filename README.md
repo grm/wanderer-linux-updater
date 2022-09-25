@@ -39,3 +39,7 @@ The script will :
 - first ask you which device you want to update (just type the corresponding number)
 - then ask you on which port is connected the device : just type the right number for the device
 - ask you a confirmation to flash the device. You can answer `y` or `Y`. IT IS VERY IMPORTANT TO NOT DISCONNECT THE DEVICE BEFORE THE END OF THE PROCESS.
+
+# Screenshot
+
+![screenshot](img/screenshot.png)

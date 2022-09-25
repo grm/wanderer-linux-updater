@@ -79,7 +79,7 @@ def run_update(device, port, file):
             "Do you wish to execute \[yY] ? [red] (do NOT disconnect device before end of process)"
         )
         execution_order = input()
-        if execution_order is "y" or execution_order == "Y":
+        if execution_order == "y" or execution_order == "Y":
             os.system(command)
             rprint("[green] Firmware update done. You can eject device.")
         else:
