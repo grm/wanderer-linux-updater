@@ -32,7 +32,7 @@ Before starting, you need :
 
 Once you are ready, you can launch the program by executing in a terminal :
 ```bash
-$ python updater.py /pat/to/the/firmware.hex
+$ python updater.py /path/to/the/firmware.hex
 ```
 
 The script will : 
