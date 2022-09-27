@@ -2,7 +2,7 @@
 
 This python script aims to automate updating new firmwares on wanderer astro (https://www.wandererastro.com/en/) on Linux.
 
-# Supported devices
+## Supported devices
 
 - WandererRotatorMini
 - WandererRotatorLite(Old)
@@ -12,7 +12,7 @@ This python script aims to automate updating new firmwares on wanderer astro (ht
 - WandererBoxUltimateV2(Old)
 - WandererCoverV3(Pro)
 
-# Installation
+## Installation
 
 You need to install `avrdude` package under linux. This script calls the binary directly.
 
@@ -23,7 +23,7 @@ $ git clone https://github.com/grm/wanderer-linux-updater
 $ cd wanderer-linux-updater
 ```
 
-#  Update
+##  Update
 
 Simply go into your installation directory and update the repository :
 ```bash
@@ -31,7 +31,7 @@ $ cd wanderer-linux-updater
 $ git pull
 ```
 
-# Usage
+## Usage
 
 To update your device, you first need to download the correct firmware for your device here : https://www.wandererastro.com/en/col.jsp?id=106.
 
@@ -50,6 +50,6 @@ The script will :
 - then ask you on which port is connected the device : just type the right number for the device
 - ask you a confirmation to flash the device. You can answer `y` or `Y`. IT IS VERY IMPORTANT TO NOT DISCONNECT THE DEVICE BEFORE THE END OF THE PROCESS.
 
-# Screenshot
+## Screenshot
 
 ![screenshot](img/screenshot.png)
