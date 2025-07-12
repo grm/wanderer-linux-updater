@@ -1,293 +1,293 @@
 {
-  "base_url": "https://grm.github.io/wanderer-linux-updater/firmwares/",
+  "source_url": null,
   "devices": {
-    "WandererBoxPlusV3": [
-      {
-        "device_config": {
-          "avr_device": "m168p",
-          "baud_rate": 115200,
-          "programmer": "arduino"
-        },
-        "filename": "WandererBoxPlusV3-20240216.hex",
-        "original_url": null,
-        "size": 32536,
-        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererBoxPlusV3-20240216.hex",
-        "version": "2024-02-16",
-        "version_date": "20240216"
-      }
-    ],
-    "WandererBoxProV3": [
-      {
-        "device_config": {
-          "avr_device": "m168p",
-          "baud_rate": 115200,
-          "programmer": "arduino"
-        },
-        "filename": "WandererBoxProV3-20240216.hex",
-        "original_url": null,
-        "size": 41000,
-        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererBoxProV3-20240216.hex",
-        "version": "2024-02-16",
-        "version_date": "20240216"
-      }
-    ],
-    "WandererCoverV3": [
-      {
-        "device_config": {
-          "avr_device": "m168p",
-          "baud_rate": 115200,
-          "programmer": "arduino"
-        },
-        "filename": "WandererCoverV3-20241104.hex",
-        "original_url": null,
-        "size": 22714,
-        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererCoverV3-20241104.hex",
-        "version": "2024-11-04",
-        "version_date": "20241104"
-      }
-    ],
-    "WandererCoverV4": [
-      {
-        "device_config": {
-          "avr_device": "m168p",
-          "baud_rate": 115200,
-          "programmer": "arduino"
-        },
-        "filename": "WandererCoverV4-20250211.hex",
-        "original_url": null,
-        "size": 43639,
-        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererCoverV4-20250211.hex",
-        "version": "2025-02-11",
-        "version_date": "20250211"
-      },
-      {
-        "device_config": {
-          "avr_device": "m168p",
-          "baud_rate": 115200,
-          "programmer": "arduino"
-        },
-        "filename": "WandererCoverV4-20241102.hex",
-        "original_url": null,
-        "size": 38014,
-        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererCoverV4-20241102.hex",
-        "version": "2024-11-02",
-        "version_date": "20241102"
-      }
-    ],
     "WandererCoverV4Pro": [
       {
-        "device_config": {
-          "avr_device": "m168p",
-          "baud_rate": 115200,
-          "programmer": "arduino"
-        },
         "filename": "WandererCoverV4Pro-20250203.hex",
-        "original_url": null,
+        "version": "2025-02-03",
+        "version_date": "20250203",
         "size": 28224,
         "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererCoverV4Pro-20250203.hex",
-        "version": "2025-02-03",
-        "version_date": "20250203"
-      },
-      {
+        "original_url": null,
         "device_config": {
           "avr_device": "m168p",
-          "baud_rate": 115200,
-          "programmer": "arduino"
-        },
+          "programmer": "arduino",
+          "baud_rate": 115200
+        }
+      },
+      {
         "filename": "WandererCoverV4Pro-20241111.hex",
-        "original_url": null,
+        "version": "2024-11-11",
+        "version_date": "20241111",
         "size": 27341,
         "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererCoverV4Pro-20241111.hex",
-        "version": "2024-11-11",
-        "version_date": "20241111"
-      }
-    ],
-    "WandererDewTerminator": [
-      {
+        "original_url": null,
         "device_config": {
           "avr_device": "m168p",
-          "baud_rate": 115200,
-          "programmer": "arduino"
-        },
-        "filename": "WandererDewTerminator-20240410.hex",
-        "original_url": null,
-        "size": 29845,
-        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererDewTerminator-20240410.hex",
-        "version": "2024-04-10",
-        "version_date": "20240410"
-      }
-    ],
-    "WandererETA54": [
-      {
-        "device_config": {
-          "avr_device": "m168p",
-          "baud_rate": 115200,
-          "programmer": "arduino"
-        },
-        "filename": "WandererETA54-20250613.hex",
-        "original_url": null,
-        "size": 42117,
-        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererETA54-20250613.hex",
-        "version": "2025-06-13",
-        "version_date": "20250613"
-      },
-      {
-        "device_config": {
-          "avr_device": "m168p",
-          "baud_rate": 115200,
-          "programmer": "arduino"
-        },
-        "filename": "WandererETA54-20250318.hex",
-        "original_url": null,
-        "size": 42739,
-        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererETA54-20250318.hex",
-        "version": "2025-03-18",
-        "version_date": "20250318"
-      },
-      {
-        "device_config": {
-          "avr_device": "m168p",
-          "baud_rate": 115200,
-          "programmer": "arduino"
-        },
-        "filename": "WandererETA54-20250317.hex",
-        "original_url": null,
-        "size": 42731,
-        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererETA54-20250317.hex",
-        "version": "2025-03-17",
-        "version_date": "20250317"
+          "programmer": "arduino",
+          "baud_rate": 115200
+        }
       }
     ],
     "WandererEclipse": [
       {
-        "device_config": {
-          "avr_device": "m168p",
-          "baud_rate": 115200,
-          "programmer": "arduino"
-        },
         "filename": "WandererEclipse-20240410.hex",
-        "original_url": null,
+        "version": "2024-04-10",
+        "version_date": "20240410",
         "size": 18640,
         "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererEclipse-20240410.hex",
-        "version": "2024-04-10",
-        "version_date": "20240410"
-      }
-    ],
-    "WandererRotatorLiteV1": [
-      {
-        "device_config": {
-          "avr_device": "m328p",
-          "baud_rate": 115200,
-          "programmer": "arduino"
-        },
-        "filename": "WandererRotatorLiteV1-20240403.hex",
         "original_url": null,
-        "size": 26171,
-        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererRotatorLiteV1-20240403.hex",
-        "version": "2024-04-03",
-        "version_date": "20240403"
-      }
-    ],
-    "WandererRotatorLiteV2": [
-      {
         "device_config": {
-          "avr_device": "m328p",
-          "baud_rate": 57600,
-          "programmer": "arduino"
-        },
-        "filename": "WandererRotatorLiteV2-20250222.hex",
-        "original_url": null,
-        "size": 32438,
-        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererRotatorLiteV2-20250222.hex",
-        "version": "2025-02-22",
-        "version_date": "20250222"
-      },
-      {
-        "device_config": {
-          "avr_device": "m328p",
-          "baud_rate": 57600,
-          "programmer": "arduino"
-        },
-        "filename": "WandererRotatorLiteV2-20240226.hex",
-        "original_url": null,
-        "size": 31035,
-        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererRotatorLiteV2-20240226.hex",
-        "version": "2024-02-26",
-        "version_date": "20240226"
+          "avr_device": "m168p",
+          "programmer": "arduino",
+          "baud_rate": 115200
+        }
       }
     ],
     "WandererRotatorMini": [
       {
-        "device_config": {
-          "avr_device": "m328p",
-          "baud_rate": 115200,
-          "programmer": "arduino"
-        },
         "filename": "WandererRotatorMini-20250222.hex",
-        "original_url": null,
+        "version": "2025-02-22",
+        "version_date": "20250222",
         "size": 32434,
         "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererRotatorMini-20250222.hex",
-        "version": "2025-02-22",
-        "version_date": "20250222"
+        "original_url": null,
+        "device_config": {
+          "avr_device": "m328p",
+          "programmer": "arduino",
+          "baud_rate": 115200
+        }
       },
       {
-        "device_config": {
-          "avr_device": "m328p",
-          "baud_rate": 115200,
-          "programmer": "arduino"
-        },
         "filename": "WandererRotatorMini-20240226.hex",
-        "original_url": null,
+        "version": "2024-02-26",
+        "version_date": "20240226",
         "size": 31031,
         "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererRotatorMini-20240226.hex",
-        "version": "2024-02-26",
-        "version_date": "20240226"
-      }
-    ],
-    "WandererRotatorProV1": [
-      {
+        "original_url": null,
         "device_config": {
           "avr_device": "m328p",
-          "baud_rate": 57600,
-          "programmer": "arduino"
-        },
-        "filename": "WandererRotatorProV1-20240226.hex",
+          "programmer": "arduino",
+          "baud_rate": 115200
+        }
+      }
+    ],
+    "WandererDewTerminator": [
+      {
+        "filename": "WandererDewTerminator-20240410.hex",
+        "version": "2024-04-10",
+        "version_date": "20240410",
+        "size": 29845,
+        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererDewTerminator-20240410.hex",
         "original_url": null,
-        "size": 29517,
-        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererRotatorProV1-20240226.hex",
-        "version": "2024-02-26",
-        "version_date": "20240226"
+        "device_config": {
+          "avr_device": "m168p",
+          "programmer": "arduino",
+          "baud_rate": 115200
+        }
+      }
+    ],
+    "WandererCoverV4": [
+      {
+        "filename": "WandererCoverV4-20250211.hex",
+        "version": "2025-02-11",
+        "version_date": "20250211",
+        "size": 43639,
+        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererCoverV4-20250211.hex",
+        "original_url": null,
+        "device_config": {
+          "avr_device": "m168p",
+          "programmer": "arduino",
+          "baud_rate": 115200
+        }
+      },
+      {
+        "filename": "WandererCoverV4-20241102.hex",
+        "version": "2024-11-02",
+        "version_date": "20241102",
+        "size": 38014,
+        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererCoverV4-20241102.hex",
+        "original_url": null,
+        "device_config": {
+          "avr_device": "m168p",
+          "programmer": "arduino",
+          "baud_rate": 115200
+        }
+      }
+    ],
+    "WandererRotatorLiteV1": [
+      {
+        "filename": "WandererRotatorLiteV1-20240403.hex",
+        "version": "2024-04-03",
+        "version_date": "20240403",
+        "size": 26171,
+        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererRotatorLiteV1-20240403.hex",
+        "original_url": null,
+        "device_config": {
+          "avr_device": "m328p",
+          "programmer": "arduino",
+          "baud_rate": 115200
+        }
       }
     ],
     "WandererRotatorProV2": [
       {
-        "device_config": {
-          "avr_device": "m168p",
-          "baud_rate": 115200,
-          "programmer": "arduino"
-        },
         "filename": "WandererRotatorProV2-20250222.hex",
-        "original_url": null,
+        "version": "2025-02-22",
+        "version_date": "20250222",
         "size": 32164,
         "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererRotatorProV2-20250222.hex",
-        "version": "2025-02-22",
-        "version_date": "20250222"
-      },
-      {
+        "original_url": null,
         "device_config": {
           "avr_device": "m168p",
-          "baud_rate": 115200,
-          "programmer": "arduino"
-        },
+          "programmer": "arduino",
+          "baud_rate": 115200
+        }
+      },
+      {
         "filename": "WandererRotatorProV2-20240520.hex",
-        "original_url": null,
+        "version": "2024-05-20",
+        "version_date": "20240520",
         "size": 30765,
         "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererRotatorProV2-20240520.hex",
-        "version": "2024-05-20",
-        "version_date": "20240520"
+        "original_url": null,
+        "device_config": {
+          "avr_device": "m168p",
+          "programmer": "arduino",
+          "baud_rate": 115200
+        }
+      }
+    ],
+    "WandererBoxPlusV3": [
+      {
+        "filename": "WandererBoxPlusV3-20240216.hex",
+        "version": "2024-02-16",
+        "version_date": "20240216",
+        "size": 32536,
+        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererBoxPlusV3-20240216.hex",
+        "original_url": null,
+        "device_config": {
+          "avr_device": "m168p",
+          "programmer": "arduino",
+          "baud_rate": 115200
+        }
+      }
+    ],
+    "WandererETA54": [
+      {
+        "filename": "WandererETA54-20250613.hex",
+        "version": "2025-06-13",
+        "version_date": "20250613",
+        "size": 42117,
+        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererETA54-20250613.hex",
+        "original_url": null,
+        "device_config": {
+          "avr_device": "m168p",
+          "programmer": "arduino",
+          "baud_rate": 115200
+        }
+      },
+      {
+        "filename": "WandererETA54-20250318.hex",
+        "version": "2025-03-18",
+        "version_date": "20250318",
+        "size": 42739,
+        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererETA54-20250318.hex",
+        "original_url": null,
+        "device_config": {
+          "avr_device": "m168p",
+          "programmer": "arduino",
+          "baud_rate": 115200
+        }
+      },
+      {
+        "filename": "WandererETA54-20250317.hex",
+        "version": "2025-03-17",
+        "version_date": "20250317",
+        "size": 42731,
+        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererETA54-20250317.hex",
+        "original_url": null,
+        "device_config": {
+          "avr_device": "m168p",
+          "programmer": "arduino",
+          "baud_rate": 115200
+        }
+      }
+    ],
+    "WandererRotatorProV1": [
+      {
+        "filename": "WandererRotatorProV1-20240226.hex",
+        "version": "2024-02-26",
+        "version_date": "20240226",
+        "size": 29517,
+        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererRotatorProV1-20240226.hex",
+        "original_url": null,
+        "device_config": {
+          "avr_device": "m328p",
+          "programmer": "arduino",
+          "baud_rate": 57600
+        }
+      }
+    ],
+    "WandererBoxProV3": [
+      {
+        "filename": "WandererBoxProV3-20240216.hex",
+        "version": "2024-02-16",
+        "version_date": "20240216",
+        "size": 41000,
+        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererBoxProV3-20240216.hex",
+        "original_url": null,
+        "device_config": {
+          "avr_device": "m168p",
+          "programmer": "arduino",
+          "baud_rate": 115200
+        }
+      }
+    ],
+    "WandererRotatorLiteV2": [
+      {
+        "filename": "WandererRotatorLiteV2-20250222.hex",
+        "version": "2025-02-22",
+        "version_date": "20250222",
+        "size": 32438,
+        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererRotatorLiteV2-20250222.hex",
+        "original_url": null,
+        "device_config": {
+          "avr_device": "m328p",
+          "programmer": "arduino",
+          "baud_rate": 57600
+        }
+      },
+      {
+        "filename": "WandererRotatorLiteV2-20240226.hex",
+        "version": "2024-02-26",
+        "version_date": "20240226",
+        "size": 31035,
+        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererRotatorLiteV2-20240226.hex",
+        "original_url": null,
+        "device_config": {
+          "avr_device": "m328p",
+          "programmer": "arduino",
+          "baud_rate": 57600
+        }
+      }
+    ],
+    "WandererCoverV3": [
+      {
+        "filename": "WandererCoverV3-20241104.hex",
+        "version": "2024-11-04",
+        "version_date": "20241104",
+        "size": 22714,
+        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererCoverV3-20241104.hex",
+        "original_url": null,
+        "device_config": {
+          "avr_device": "m168p",
+          "programmer": "arduino",
+          "baud_rate": 115200
+        }
       }
     ]
   },
-  "last_updated": "2025-07-12T22:48:24.311636",
-  "source_url": null
+  "base_url": "https://grm.github.io/wanderer-linux-updater/firmwares/",
+  "last_updated": "2025-07-12T22:52:19.906290"
 }
