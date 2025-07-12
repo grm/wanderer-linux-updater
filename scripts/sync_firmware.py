@@ -70,7 +70,7 @@ def generate_index_from_local_firmwares():
     # Only now add last_updated and write the file
     index['last_updated'] = datetime.now().isoformat()
     with open(index_file, 'w') as f:
-        json.dump(index, f, indent=2)
+        json.dump(index, f, indent=2, sort_keys=True)
     print(f"Index generated with {sum(len(v) for v in index['devices'].values())} firmwares in {len(index['devices'])} models.")
     print(f"Index file: {index_file.resolve()}")
 
