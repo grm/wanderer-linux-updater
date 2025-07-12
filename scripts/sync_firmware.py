@@ -60,11 +60,12 @@ def generate_index_from_local_firmwares():
     new_index_json = json.dumps(index, indent=2, sort_keys=True)
     if index_file.exists():
         with open(index_file, 'r') as f:
-            old_index_json = f.read()
-        import re as _re
-        def strip_last_updated(json_str):
-            return _re.sub(r'"last_updated":\s*"[^"]*",?\n', '', json_str)
-        if strip_last_updated(new_index_json) == strip_last_updated(old_index_json):
+            old_index = json.load(f)
+        # Remove last_updated from old index for comparison
+        if 'last_updated' in old_index:
+            del old_index['last_updated']
+        old_index_json = json.dumps(old_index, indent=2, sort_keys=True)
+        if new_index_json == old_index_json:
             print("No change in firmware index. Skipping file write and last_updated update.")
             return
     # Only now add last_updated and write the file
