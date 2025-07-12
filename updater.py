@@ -89,56 +89,90 @@ def run_update(device, port, file):
             rprint("[red] Aborting ..")
 
 
-def main(firmware_url):
+def main(firmware_url=None, firmware_file=None):
     rprint(
         Panel("[green]Welcome to [red]Wanderer astro[/red] linux update tool ![/green]")
     )
     
-    # Download and parse firmware list
-    firmware_list = download_firmware_list(firmware_url)
-    if not firmware_list:
-        rprint("[red]Failed to download firmware list. Exiting.[/red]")
-        return
+    firmware_path = None
     
-    firmware_files = parse_firmware_list(firmware_list)
-    if not firmware_files:
-        rprint("[red]No firmware files found in the list. Exiting.[/red]")
-        return
-    
-    # Display available firmware files
-    firmware_names = [fw['display_name'] for fw in firmware_files]
-    firmware_index = ask_question(
-        "Which firmware would you like to install?", firmware_names
-    )
-    
-    selected_firmware = firmware_files[firmware_index]
-    
-    # Get device selection
-    supported_devices = get_supported_device()
-    supported_devices_index = ask_question(
-        "What device you wish to update ?", supported_devices
-    )
-
-    # Get serial port selection
-    serial_ports = get_serial_ports()
-    serial_port_index = ask_question(
-        "Which port the device is connected to ?", serial_ports
-    )
-
-    # Create temporary directory for firmware download
-    with tempfile.TemporaryDirectory() as temp_dir:
-        # Download the selected firmware
-        firmware_path = download_firmware_file(selected_firmware['url'], temp_dir)
-        if not firmware_path:
-            rprint("[red]Failed to download firmware. Exiting.[/red]")
+    if firmware_file:
+        # Mode fichier local
+        if not os.path.exists(firmware_file):
+            rprint(f"[red]Error: Firmware file '{firmware_file}' not found.[/red]")
             return
+        firmware_path = firmware_file
+        rprint(f"[green]Using local firmware file: {firmware_file}[/green]")
         
+        # Get device selection
+        supported_devices = get_supported_device()
+        supported_devices_index = ask_question(
+            "What device you wish to update ?", supported_devices
+        )
+
+        # Get serial port selection
+        serial_ports = get_serial_ports()
+        serial_port_index = ask_question(
+            "Which port the device is connected to ?", serial_ports
+        )
+
         # Run the update
         run_update(
             supported_devices[supported_devices_index],
             serial_ports[serial_port_index],
             firmware_path,
         )
+    else:
+        # Mode URL - téléchargement
+        if not firmware_url:
+            rprint("[red]Error: No firmware URL or file specified.[/red]")
+            return
+            
+        # Download and parse firmware list
+        firmware_list = download_firmware_list(firmware_url)
+        if not firmware_list:
+            rprint("[red]Failed to download firmware list. Exiting.[/red]")
+            return
+        
+        firmware_files = parse_firmware_list(firmware_list)
+        if not firmware_files:
+            rprint("[red]No firmware files found in the list. Exiting.[/red]")
+            return
+        
+        # Display available firmware files
+        firmware_names = [fw['display_name'] for fw in firmware_files]
+        firmware_index = ask_question(
+            "Which firmware would you like to install?", firmware_names
+        )
+        
+        selected_firmware = firmware_files[firmware_index]
+        
+        # Create temporary directory for firmware download
+        with tempfile.TemporaryDirectory() as temp_dir:
+            # Download the selected firmware
+            firmware_path = download_firmware_file(selected_firmware['url'], temp_dir)
+            if not firmware_path:
+                rprint("[red]Failed to download firmware. Exiting.[/red]")
+                return
+            
+            # Get device selection
+            supported_devices = get_supported_device()
+            supported_devices_index = ask_question(
+                "What device you wish to update ?", supported_devices
+            )
+
+            # Get serial port selection
+            serial_ports = get_serial_ports()
+            serial_port_index = ask_question(
+                "Which port the device is connected to ?", serial_ports
+            )
+
+            # Run the update (inside the temp directory context)
+            run_update(
+                supported_devices[supported_devices_index],
+                serial_ports[serial_port_index],
+                firmware_path,
+            )
 
 
 def download_firmware_list(url):
@@ -195,23 +229,26 @@ if __name__ == "__main__":
     parser.add_argument(
         "-u", "--url", 
         type=str, 
-        required=True,
-        help="URL to firmware list (required)"
+        help="URL to firmware list (use with URL mode)"
+    )
+    parser.add_argument(
+        "-f", "--file",
+        type=str,
+        help="Local firmware file path (use with file mode)"
     )
     parser.add_argument(
         "-d",
         action="store_true",
-        help="Do a dry run (pint avr command instead of executing it",
+        help="Do a dry run (print avr command instead of executing it)",
     )
 
     args = parser.parse_args()
     make_dry_run = args.d
     
-    # Use the provided URL
-    firmware_url = args.url
+    # Check that exactly one mode is specified
+    if bool(args.url) == bool(args.file):
+        rprint("[red]Error: Please specify either --url (for download mode) or --file (for local file mode), but not both.[/red]")
+        sys.exit(1)
     
-    # Create a modified main function that uses the specified URL
-    def main_with_url(url):
-        main(url)
-    
-    main_with_url(firmware_url)
+    # Call main with appropriate parameters
+    main(firmware_url=args.url, firmware_file=args.file)
