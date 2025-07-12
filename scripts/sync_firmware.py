@@ -17,8 +17,8 @@ def generate_index_from_local_firmwares():
     index_file = Path(config_manager.firmware_config.index_file)
     github_repo = config_manager.firmware_config.github_repo
 
+    # Build index without last_updated first
     index = {
-        'last_updated': datetime.now().isoformat(),
         'source_url': None,
         'devices': {}
     }
@@ -56,20 +56,21 @@ def generate_index_from_local_firmwares():
     for device in index['devices']:
         index['devices'][device].sort(key=lambda x: x['version_date'], reverse=True)
 
-    # Compare with existing index file
+    # Compare with existing index file (excluding last_updated)
     new_index_json = json.dumps(index, indent=2, sort_keys=True)
     if index_file.exists():
         with open(index_file, 'r') as f:
             old_index_json = f.read()
-        # Remove last_updated field for comparison
         import re as _re
         def strip_last_updated(json_str):
             return _re.sub(r'"last_updated":\s*"[^"]*",?\n', '', json_str)
         if strip_last_updated(new_index_json) == strip_last_updated(old_index_json):
-            print("No change in firmware index. Skipping file write.")
+            print("No change in firmware index. Skipping file write and last_updated update.")
             return
+    # Only now add last_updated and write the file
+    index['last_updated'] = datetime.now().isoformat()
     with open(index_file, 'w') as f:
-        f.write(new_index_json)
+        json.dump(index, f, indent=2)
     print(f"Index generated with {sum(len(v) for v in index['devices'].values())} firmwares in {len(index['devices'])} models.")
     print(f"Index file: {index_file.resolve()}")
 
