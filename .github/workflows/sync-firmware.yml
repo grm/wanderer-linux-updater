@@ -29,7 +29,7 @@ jobs:
         
     - name: Sync firmware files
       run: |
-        pipenv run python scripts/sync_firmware.py
+        pipenv run python -m scripts.sync_firmware
         
     - name: Commit and push changes
       run: |
