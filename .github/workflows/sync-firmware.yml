@@ -17,21 +17,24 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.11'
+        python-version: '3.12'
         
+    - name: Install pipenv
+      run: |
+        pip install pipenv
+    
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install requests pyyaml
+        pipenv install --deploy --ignore-pipfile
         
     - name: Sync firmware files
       run: |
-        python scripts/sync_firmware.py
+        pipenv run python scripts/sync_firmware.py
         
     - name: Commit and push changes
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git add firmware/ firmware_index.json
+        git add firmwares/ firmware_index.json
         git commit -m "Update firmware files - ${{ github.run_number }}" || exit 0
         git push 
