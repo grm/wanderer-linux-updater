@@ -34,22 +34,6 @@ device_detection:
     - "VERSION"
     - "DEVICE"
     - "ID"
-  
-  # Expected responses for device identification
-  device_responses:
-    WandererBoxPlusV3: ["WandererBoxPlusV3", "BoxPlusV3", "V3"]
-    WandererBoxProV3: ["WandererBoxProV3", "BoxProV3", "ProV3"]
-    WandererCoverV3: ["WandererCoverV3", "CoverV3"]
-    WandererCoverV4: ["WandererCoverV4", "CoverV4"]
-    WandererCoverV4Pro: ["WandererCoverV4Pro", "CoverV4Pro"]
-    WandererDewTerminator: ["WandererDewTerminator", "DewTerminator"]
-    WandererEclipse: ["WandererEclipse", "Eclipse"]
-    WandererRotatorLiteV1: ["WandererRotatorLiteV1", "RotatorLiteV1", "RotatorLite"]
-    WandererRotatorLiteV2: ["WandererRotatorLiteV2", "RotatorLiteV2"]
-    WandererRotatorMini: ["WandererRotatorMini", "RotatorMini"]
-    WandererRotatorProV1: ["WandererRotatorProV1", "RotatorProV1", "RotatorPro"]
-    WandererRotatorProV2: ["WandererRotatorProV2", "RotatorProV2"]
-    WandererETA54: ["WandererETA54", "ETA54"]
 
 # Device definitions (replaces devices.txt)
 devices:
@@ -63,7 +47,7 @@ devices:
     avr_device: "m328p"
     programmer: "arduino"
     baud_rate: 115200
-    handshake_string: "WandererRotatorLiteV1"
+    handshake_string: "WandererRotatorLite"
     
   WandererRotatorLiteV2:
     avr_device: "m328p"
@@ -75,37 +59,37 @@ devices:
     avr_device: "m328p"
     programmer: "arduino"
     baud_rate: 57600
-    handshake_string: "WandererRotatorProV1"
+    handshake_string: "XXX"
     
   WandererBoxPlusV2:
     avr_device: "m168p"
     programmer: "arduino"
     baud_rate: 115200
-    handshake_string: "WandererBoxPlusV2"
+    handshake_string: "XXX"
     
   WandererBoxUltimateV2:
     avr_device: "m328p"
     programmer: "arduino"
     baud_rate: 57600
-    handshake_string: "WandererBoxUltimateV2"
+    handshake_string: "XXX"
     
   WandererCoverV3:
     avr_device: "m168p"
     programmer: "arduino"
     baud_rate: 115200
-    handshake_string: "WandererCoverV3"
+    handshake_string: "???"
     
   WandererBoxPlusV3:
     avr_device: "m168p"
     programmer: "arduino"
     baud_rate: 115200
-    handshake_string: "WandererBoxPlusV3"
+    handshake_string: "ZXWBPlusV3"
     
   WandererBoxProV3:
     avr_device: "m168p"
     programmer: "arduino"
     baud_rate: 115200
-    handshake_string: "WandererBoxProV3"
+    handshake_string: "ZXWBProV3"
     
   WandererCoverV4:
     avr_device: "m168p"
@@ -117,31 +101,31 @@ devices:
     avr_device: "m168p"
     programmer: "arduino"
     baud_rate: 115200
-    handshake_string: "WandererCoverV4Pro"
+    handshake_string: "WandererCoverV4"
     
   WandererDewTerminator:
     avr_device: "m168p"
     programmer: "arduino"
     baud_rate: 115200
-    handshake_string: "WandererDewTerminator"
+    handshake_string: "XXX"
     
   WandererEclipse:
     avr_device: "m168p"
     programmer: "arduino"
     baud_rate: 115200
-    handshake_string: "WandererEclipse"
+    handshake_string: "XXX"
     
   WandererRotatorProV2:
     avr_device: "m168p"
     programmer: "arduino"
     baud_rate: 115200
-    handshake_string: "WandererRotatorProV2"
+    handshake_string: "XXX"
     
   WandererETA54:
     avr_device: "m168p"
     programmer: "arduino"
     baud_rate: 115200
-    handshake_string: "WandererETA54"
+    handshake_string: "XXX"
 
 # Update configuration
 update:

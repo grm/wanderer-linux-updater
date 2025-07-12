@@ -38,7 +38,6 @@ class DeviceDetectionConfig:
     port_detection_timeout: int
     baud_rates: List[int]
     handshake_commands: List[str]
-    device_responses: Dict[str, List[str]]
 
 
 @dataclass
@@ -94,7 +93,7 @@ class ConfigManager:
             source_url=firmware_data.get('source_url', ''),
             github_repo=firmware_data.get('github_repo'),
             sync_interval_hours=firmware_data.get('sync_interval_hours', 6),
-            firmware_dir=firmware_data.get('firmware_dir', 'firmware'),
+            firmware_dir=firmware_data.get('firmware_dir', 'firmwares'),
             index_file=firmware_data.get('index_file', 'firmware_index.json')
         )
         
@@ -104,8 +103,7 @@ class ConfigManager:
             handshake_timeout=detection_data.get('handshake_timeout', 5),
             port_detection_timeout=detection_data.get('port_detection_timeout', 3),
             baud_rates=detection_data.get('baud_rates', [115200, 57600, 9600]),
-            handshake_commands=detection_data.get('handshake_commands', ['VERSION', 'DEVICE', 'ID']),
-            device_responses=detection_data.get('device_responses', {})
+            handshake_commands=detection_data.get('handshake_commands', ['VERSION', 'DEVICE', 'ID'])
         )
         
         # Parse devices
@@ -155,14 +153,10 @@ class ConfigManager:
         model_name = handshake_response.split('A', 1)[0].strip()
         if model_name in self.devices:
             return self.devices[model_name]
-        # Fallback: try previous logic (handshake_string or device_responses)
+        # Fallback: try handshake_string
         for device_name, device_config in self.devices.items():
             if device_config.handshake_string.lower() in handshake_response.lower():
                 return device_config
-        for device_name, responses in self.device_detection_config.device_responses.items():
-            for response in responses:
-                if response.lower() in handshake_response.lower():
-                    return self.devices.get(device_name)
         return None
     
     def validate_config(self) -> List[str]:
