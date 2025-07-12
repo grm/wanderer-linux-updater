@@ -14,7 +14,11 @@ from os import path
 from random import choices
 from rich import print as rprint
 from rich.panel import Panel
-from typing import IO, Optional
+from typing import IO, Optional, List
+
+# Import our new modules
+from config_manager import ConfigManager
+from device_detector import DeviceDetector, DetectedDevice
 
 make_dry_run = False
 
@@ -43,12 +47,16 @@ def ask_question(question, answers):
     return choice
 
 
-def get_supported_device():
+def get_supported_device(config_manager: ConfigManager):
+    """Get supported devices from configuration."""
     devices = []
-    with open("devices.txt") as csv_file:
-        csv_reader = csv.reader(csv_file, delimiter=";")
-        for row in csv_reader:
-            devices.append(row)
+    for device_config in config_manager.get_all_devices():
+        devices.append([
+            device_config.name,
+            device_config.avr_device,
+            device_config.programmer,
+            str(device_config.baud_rate)
+        ])
     return devices
 
 
@@ -74,105 +82,84 @@ def get_serial_ports():
     return result
 
 
-def run_update(device, port, file):
-    command = f"avrdude -p {device[1]} -c {device[2]} -b {device[3]}  -P {port} -U flash:w:{file}:i"
+def run_update(device, port, file, config_manager: ConfigManager):
+    """Run firmware update with device configuration."""
+    device_config = config_manager.get_device(device[0])
+    if not device_config:
+        rprint(f"[red]Error: Device configuration not found for {device[0]}[/red]")
+        return
+    
+    command = f"avrdude -p {device_config.avr_device} -c {device_config.programmer} -b {device_config.baud_rate} -P {port} -U flash:w:{file}:i"
     rprint(f"Command : '{command}'")
+    
     if not make_dry_run:
-        rprint(
-            "Do you wish to execute \[yY] ? [red] (do NOT disconnect device before end of process)"
-        )
-        execution_order = input()
-        if execution_order == "y" or execution_order == "Y":
+        if config_manager.update_config.confirm_update:
+            rprint(
+                "Do you wish to execute \[yY] ? [red] (do NOT disconnect device before end of process)"
+            )
+            execution_order = input()
+            if execution_order == "y" or execution_order == "Y":
+                os.system(command)
+                rprint("[green] Firmware update done. You can eject device.")
+            else:
+                rprint("[red] Aborting ..")
+        else:
             os.system(command)
             rprint("[green] Firmware update done. You can eject device.")
-        else:
-            rprint("[red] Aborting ..")
-
-
-def main(firmware_url=None, firmware_file=None):
-    rprint(
-        Panel("[green]Welcome to [red]Wanderer astro[/red] linux update tool ![/green]")
-    )
-    
-    firmware_path = None
-    
-    if firmware_file:
-        # Mode fichier local
-        if not os.path.exists(firmware_file):
-            rprint(f"[red]Error: Firmware file '{firmware_file}' not found.[/red]")
-            return
-        firmware_path = firmware_file
-        rprint(f"[green]Using local firmware file: {firmware_file}[/green]")
-        
-        # Get device selection
-        supported_devices = get_supported_device()
-        supported_devices_index = ask_question(
-            "What device you wish to update ?", supported_devices
-        )
-
-        # Get serial port selection
-        serial_ports = get_serial_ports()
-        serial_port_index = ask_question(
-            "Which port the device is connected to ?", serial_ports
-        )
-
-        # Run the update
-        run_update(
-            supported_devices[supported_devices_index],
-            serial_ports[serial_port_index],
-            firmware_path,
-        )
     else:
-        # Mode URL - téléchargement
-        if not firmware_url:
-            rprint("[red]Error: No firmware URL or file specified.[/red]")
-            return
-            
-        # Download and parse firmware list
-        firmware_list = download_firmware_list(firmware_url)
-        if not firmware_list:
-            rprint("[red]Failed to download firmware list. Exiting.[/red]")
-            return
-        
-        firmware_files = parse_firmware_list(firmware_list)
-        if not firmware_files:
-            rprint("[red]No firmware files found in the list. Exiting.[/red]")
-            return
-        
-        # Display available firmware files
-        firmware_names = [fw['display_name'] for fw in firmware_files]
-        firmware_index = ask_question(
-            "Which firmware would you like to install?", firmware_names
-        )
-        
-        selected_firmware = firmware_files[firmware_index]
-        
-        # Create temporary directory for firmware download
-        with tempfile.TemporaryDirectory() as temp_dir:
-            # Download the selected firmware
-            firmware_path = download_firmware_file(selected_firmware['url'], temp_dir)
-            if not firmware_path:
-                rprint("[red]Failed to download firmware. Exiting.[/red]")
-                return
-            
-            # Get device selection
-            supported_devices = get_supported_device()
-            supported_devices_index = ask_question(
-                "What device you wish to update ?", supported_devices
-            )
+        rprint("[yellow]Dry run mode - command not executed[/yellow]")
 
-            # Get serial port selection
-            serial_ports = get_serial_ports()
-            serial_port_index = ask_question(
-                "Which port the device is connected to ?", serial_ports
-            )
 
-            # Run the update (inside the temp directory context)
-            run_update(
-                supported_devices[supported_devices_index],
-                serial_ports[serial_port_index],
-                firmware_path,
-            )
+def detect_connected_devices(config_manager: ConfigManager) -> List[DetectedDevice]:
+    """Detect connected devices using handshake."""
+    detector = DeviceDetector(config_manager)
+    detected_devices = detector.detect_devices()
+    
+    if detected_devices:
+        rprint(f"[green]Detected {len(detected_devices)} device(s):[/green]")
+        device_list = detector.format_device_list(detected_devices)
+        for device_info in device_list:
+            rprint(f"  [blue]{device_info}[/blue]")
+    else:
+        rprint("[yellow]No devices detected via handshake[/yellow]")
+    
+    return detected_devices
+
+
+def get_firmware_index(github_repo=None):
+    """Get firmware index from GitHub Pages."""
+    if not github_repo:
+        github_repo = "your-username/wanderer-linux-updater"  # Update with your repo
+    
+    # GitHub Pages URL for the index file
+    index_url = f"https://{github_repo.split('/')[0]}.github.io/{github_repo.split('/')[1]}/firmware_index.json"
+    
+    try:
+        rprint(f"[blue]Downloading firmware index from: {index_url}[/blue]")
+        response = requests.get(index_url, timeout=30)
+        response.raise_for_status()
+        return response.json()
+    except requests.RequestException as e:
+        rprint(f"[red]Error downloading firmware index: {e}[/red]")
+        return None
+
+
+def get_available_firmware_for_device(device_name, firmware_index):
+    """Get available firmware for a specific device."""
+    if not firmware_index or 'devices' not in firmware_index:
+        return []
+    
+    # Try exact match first
+    if device_name in firmware_index['devices']:
+        return firmware_index['devices'][device_name]
+    
+    # Try partial matches
+    available_firmware = []
+    for device, firmwares in firmware_index['devices'].items():
+        if device_name.lower() in device.lower() or device.lower() in device_name.lower():
+            available_firmware.extend(firmwares)
+    
+    return available_firmware
 
 
 def download_firmware_list(url):
@@ -224,17 +211,144 @@ def download_firmware_file(firmware_url, temp_dir):
         return None
 
 
+def scan_and_detect_devices_with_versions(config_manager, firmware_index):
+    """
+    Scan all /dev/ttyUSB* and /dev/ttyACM* ports, detect Wanderer devices,
+    extract model and version, and return a list of dicts:
+    [{ 'port': ..., 'model': ..., 'current_version': ..., 'available_version': ..., 'device_config': ... }]
+    """
+    ports = glob.glob('/dev/ttyUSB*') + glob.glob('/dev/ttyACM*')
+    detected = []
+    for port in ports:
+        for baud_rate in config_manager.device_detection_config.baud_rates:
+            try:
+                import serial
+                with serial.Serial(port, baud_rate, timeout=3) as ser:
+                    ser.reset_input_buffer()
+                    ser.reset_output_buffer()
+                    # Read a line or up to 64 bytes
+                    line = ser.readline().decode('utf-8', errors='ignore').strip()
+                    if not line:
+                        # Try reading raw if readline fails
+                        ser.write(b'\n')
+                        ser.flush()
+                        import time; time.sleep(0.5)
+                        if ser.in_waiting > 0:
+                            line = ser.read(ser.in_waiting).decode('utf-8', errors='ignore').strip()
+                    # Always disconnect after detection (context manager ensures this)
+                    # Detection logic
+                    if line and 'A' in line:
+                        model = line.split('A', 1)[0].strip()
+                        version = line.split('A', 2)[1] if line.count('A') >= 1 else ''
+                        device_config = config_manager.get_device(model)
+                        if device_config:
+                            # Get available version from firmware index
+                            available_version = None
+                            if firmware_index and 'devices' in firmware_index and model in firmware_index['devices']:
+                                available_version = firmware_index['devices'][model][0]['version']
+                            detected.append({
+                                'port': port,
+                                'model': model,
+                                'current_version': version,
+                                'available_version': available_version,
+                                'device_config': device_config
+                            })
+                            break  # Stop trying other baud rates for this port
+            except Exception:
+                continue
+    return detected
+
+
+def main(firmware_url=None, firmware_file=None, github_repo=None, config_file="config.yml"):
+    rprint(
+        Panel("[green]Welcome to [red]Wanderer astro[/red] linux update tool ![/green]")
+    )
+    
+    # Load configuration
+    try:
+        config_manager = ConfigManager(config_file)
+    except Exception as e:
+        rprint(f"[red]Error loading configuration: {e}[/red]")
+        return
+    
+    # Validate configuration
+    errors = config_manager.validate_config()
+    if errors:
+        rprint("[red]Configuration errors:[/red]")
+        for error in errors:
+            rprint(f"  [red]- {error}[/red]")
+        return
+    
+    firmware_path = None
+    
+    # Mode unique : détection automatique au démarrage
+    firmware_index = get_firmware_index(github_repo)
+    if not firmware_index:
+        rprint("[red]Failed to download firmware index. Exiting.[/red]")
+        return
+    # Scan all USB/ACM ports for Wanderer devices
+    detected = scan_and_detect_devices_with_versions(config_manager, firmware_index)
+    if detected:
+        rprint("[green]Appareils Wanderer détectés :[/green]")
+        choices = []
+        for i, d in enumerate(detected):
+            choices.append(f"{d['port']} | {d['model']} | version actuelle: {d['current_version']} | version dispo: {d['available_version']}")
+            rprint(f"  [yellow]{i}[/yellow] : [blue]{choices[-1]}")
+        rprint("Votre choix : ")
+        ichoice = input()
+        try:
+            choice = int(ichoice)
+            if choice < 0 or choice >= len(detected):
+                rprint(f"[red]Erreur : numéro invalide[/red]")
+                return
+        except ValueError:
+            rprint(f"[red]Erreur : veuillez entrer un numéro valide[/red]")
+            return
+        selected = detected[choice]
+        # On lance la mise à jour sur ce port et ce modèle
+        available_firmware = get_available_firmware_for_device(selected['model'], firmware_index)
+        if not available_firmware:
+            rprint(f"[red]Aucun firmware trouvé pour {selected['model']}")
+            return
+        # Trier du plus récent au plus ancien (ordre décroissant)
+        available_firmware = sorted(available_firmware, key=lambda fw: fw['version_date'], reverse=True)
+        # Proposer le choix de version si plusieurs
+        if len(available_firmware) > 1:
+            fw_choices = [f"{fw['version']} ({fw['filename']})" for fw in available_firmware]
+            fw_index = ask_question(f"Quelle version installer pour {selected['model']} ?", fw_choices)
+            selected_firmware = available_firmware[fw_index]
+        else:
+            selected_firmware = available_firmware[0]
+        with tempfile.TemporaryDirectory() as temp_dir:
+            firmware_path = download_firmware_file(selected_firmware['url'], temp_dir)
+            if not firmware_path:
+                rprint("[red]Echec du téléchargement du firmware. Abandon.[/red]")
+                return
+            run_update(
+                [selected['model'], selected['device_config'].avr_device, selected['device_config'].programmer, str(selected['device_config'].baud_rate)],
+                selected['port'],
+                firmware_path,
+                config_manager
+            )
+        return
+    else:
+        rprint("[yellow]Aucun appareil Wanderer détecté sur les ports USB/ACM. Arrêt du script.[/yellow]")
+        return
+
+
 if __name__ == "__main__":
     parser = WandererParser(description="WandererLinuxUpdater help")
     parser.add_argument(
-        "-u", "--url", 
-        type=str, 
-        help="URL to firmware list (use with URL mode)"
+        "-g", "--github",
+        type=str,
+        required=True,
+        help="GitHub repository for firmware index (format: username/repo)"
     )
     parser.add_argument(
-        "-f", "--file",
+        "-c", "--config",
         type=str,
-        help="Local firmware file path (use with file mode)"
+        default="config.yml",
+        help="Configuration file path (default: config.yml)"
     )
     parser.add_argument(
         "-d",
@@ -245,10 +359,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
     make_dry_run = args.d
     
-    # Check that exactly one mode is specified
-    if bool(args.url) == bool(args.file):
-        rprint("[red]Error: Please specify either --url (for download mode) or --file (for local file mode), but not both.[/red]")
-        sys.exit(1)
-    
-    # Call main with appropriate parameters
-    main(firmware_url=args.url, firmware_file=args.file)
+    # Mode unique : détection automatique
+    main(github_repo=args.github, config_file=args.config)

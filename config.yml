@@ -1,0 +1,172 @@
+# Configuration file for Wanderer Linux Updater
+# This file contains all configuration options for the updater
+
+# Firmware sync configuration
+firmware:
+  # Source URL for firmware list
+  source_url: "https://od.lk/d/MzNfMzIzNTQ2OTNf/FirmwareDownloadList.txt"
+  
+  # GitHub repository for hosting firmware files (optional)
+  github_repo: "grm/wanderer-linux-updater"
+  
+  # Sync interval in hours (for GitHub Actions)
+  sync_interval_hours: 6
+  
+  # Firmware directory name
+  firmware_dir: "firmwares"
+  
+  # Index file name
+  index_file: "firmware_index.json"
+
+# Device detection configuration
+device_detection:
+  # Handshake timeout in seconds
+  handshake_timeout: 5
+  
+  # Serial port detection timeout in seconds
+  port_detection_timeout: 3
+  
+  # Baud rates to try during handshake
+  baud_rates: [115200, 57600, 9600]
+  
+  # Handshake commands to send
+  handshake_commands:
+    - "VERSION"
+    - "DEVICE"
+    - "ID"
+  
+  # Expected responses for device identification
+  device_responses:
+    WandererBoxPlusV3: ["WandererBoxPlusV3", "BoxPlusV3", "V3"]
+    WandererBoxProV3: ["WandererBoxProV3", "BoxProV3", "ProV3"]
+    WandererCoverV3: ["WandererCoverV3", "CoverV3"]
+    WandererCoverV4: ["WandererCoverV4", "CoverV4"]
+    WandererCoverV4Pro: ["WandererCoverV4Pro", "CoverV4Pro"]
+    WandererDewTerminator: ["WandererDewTerminator", "DewTerminator"]
+    WandererEclipse: ["WandererEclipse", "Eclipse"]
+    WandererRotatorLiteV1: ["WandererRotatorLiteV1", "RotatorLiteV1", "RotatorLite"]
+    WandererRotatorLiteV2: ["WandererRotatorLiteV2", "RotatorLiteV2"]
+    WandererRotatorMini: ["WandererRotatorMini", "RotatorMini"]
+    WandererRotatorProV1: ["WandererRotatorProV1", "RotatorProV1", "RotatorPro"]
+    WandererRotatorProV2: ["WandererRotatorProV2", "RotatorProV2"]
+    WandererETA54: ["WandererETA54", "ETA54"]
+
+# Device definitions (replaces devices.txt)
+devices:
+  WandererRotatorMini:
+    avr_device: "m328p"
+    programmer: "arduino"
+    baud_rate: 115200
+    handshake_string: "WandererRotatorMini"
+    
+  WandererRotatorLiteV1:
+    avr_device: "m328p"
+    programmer: "arduino"
+    baud_rate: 115200
+    handshake_string: "WandererRotatorLiteV1"
+    
+  WandererRotatorLiteV2:
+    avr_device: "m328p"
+    programmer: "arduino"
+    baud_rate: 57600
+    handshake_string: "WandererRotatorLiteV2"
+    
+  WandererRotatorProV1:
+    avr_device: "m328p"
+    programmer: "arduino"
+    baud_rate: 57600
+    handshake_string: "WandererRotatorProV1"
+    
+  WandererBoxPlusV2:
+    avr_device: "m168p"
+    programmer: "arduino"
+    baud_rate: 115200
+    handshake_string: "WandererBoxPlusV2"
+    
+  WandererBoxUltimateV2:
+    avr_device: "m328p"
+    programmer: "arduino"
+    baud_rate: 57600
+    handshake_string: "WandererBoxUltimateV2"
+    
+  WandererCoverV3:
+    avr_device: "m168p"
+    programmer: "arduino"
+    baud_rate: 115200
+    handshake_string: "WandererCoverV3"
+    
+  WandererBoxPlusV3:
+    avr_device: "m168p"
+    programmer: "arduino"
+    baud_rate: 115200
+    handshake_string: "WandererBoxPlusV3"
+    
+  WandererBoxProV3:
+    avr_device: "m168p"
+    programmer: "arduino"
+    baud_rate: 115200
+    handshake_string: "WandererBoxProV3"
+    
+  WandererCoverV4:
+    avr_device: "m168p"
+    programmer: "arduino"
+    baud_rate: 115200
+    handshake_string: "WandererCoverV4"
+    
+  WandererCoverV4Pro:
+    avr_device: "m168p"
+    programmer: "arduino"
+    baud_rate: 115200
+    handshake_string: "WandererCoverV4Pro"
+    
+  WandererDewTerminator:
+    avr_device: "m168p"
+    programmer: "arduino"
+    baud_rate: 115200
+    handshake_string: "WandererDewTerminator"
+    
+  WandererEclipse:
+    avr_device: "m168p"
+    programmer: "arduino"
+    baud_rate: 115200
+    handshake_string: "WandererEclipse"
+    
+  WandererRotatorProV2:
+    avr_device: "m168p"
+    programmer: "arduino"
+    baud_rate: 115200
+    handshake_string: "WandererRotatorProV2"
+    
+  WandererETA54:
+    avr_device: "m168p"
+    programmer: "arduino"
+    baud_rate: 115200
+    handshake_string: "WandererETA54"
+
+# Update configuration
+update:
+  # Default timeout for avrdude operations
+  avrdude_timeout: 60
+  
+  # Dry run mode (default: false)
+  dry_run: false
+  
+  # Auto-detect device (default: true)
+  auto_detect: true
+  
+  # Auto-detect port (default: true)
+  auto_detect_port: true
+  
+  # Confirm before update (default: true)
+  confirm_update: true
+
+# Logging configuration
+logging:
+  # Log level: DEBUG, INFO, WARNING, ERROR
+  level: "INFO"
+  
+  # Log to file (optional)
+  log_file: null
+  
+  # Show progress bars
+  show_progress: true 
