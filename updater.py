@@ -131,8 +131,11 @@ def get_firmware_index(github_repo=None):
     if not github_repo:
         github_repo = "your-username/wanderer-linux-updater"  # Update with your repo
     
-    # GitHub Pages URL for the index file
-    index_url = f"https://{github_repo.split('/')[0]}.github.io/{github_repo.split('/')[1]}/firmware_index.json"
+    print(f"DEBUG: github_repo = {github_repo!r}")
+    if not github_repo or '/' not in github_repo:
+        raise ValueError(f"Invalid github_repo format: '{github_repo}'. Expected 'username/reponame'.")
+    parts = github_repo.split('/')
+    index_url = f"https://{parts[0]}.github.io/{parts[1]}/firmware_index.json"
     
     try:
         rprint(f"[blue]Downloading firmware index from: {index_url}[/blue]")
