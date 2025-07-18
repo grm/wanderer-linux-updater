@@ -295,9 +295,11 @@ def test_device_connection(port: str, device_config) -> bool:
                             rprint(f"[yellow][DEBUG] Received data (no newline): '{new_data.strip()}'")
                         
                         # Check if we have any response
-                        if all_received_data.strip():
+                        if all_received_data.strip() and len(all_received_data.strip()) > 0:
                             if DEBUG_MODE:
                                 rprint(f"[yellow][DEBUG] Found response: '{all_received_data.strip()}'")
+                                rprint(f"[yellow][DEBUG] Response length: {len(all_received_data.strip())}")
+                                rprint(f"[yellow][DEBUG] Response bytes: {repr(all_received_data)}")
                             rprint(f"[green]✓ Device {device_config.name} detected on {port}[/green]")
                             return True
                     
