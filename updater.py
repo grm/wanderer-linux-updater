@@ -220,8 +220,13 @@ def test_device_connection(port: str, device_config) -> bool:
     """Test if device is connected and responding on the selected port."""
     rprint(f"[blue]Testing connection to {device_config.name} on {port}...[/blue]")
     
+    # Use handshake_baud_rate if available, otherwise use baud_rate
+    detection_baud_rate = device_config.handshake_baud_rate if device_config.handshake_baud_rate else device_config.baud_rate
+    
     if DEBUG_MODE:
-        rprint(f"[yellow][DEBUG] Testing device {device_config.name} on {port} at {device_config.baud_rate} baud")
+        rprint(f"[yellow][DEBUG] Testing device {device_config.name} on {port} at {detection_baud_rate} baud")
+        if device_config.handshake_baud_rate:
+            rprint(f"[yellow][DEBUG] Using handshake_baud_rate: {detection_baud_rate} (avrdude will use: {device_config.baud_rate})")
         if device_config.handshake_string:
             rprint(f"[yellow][DEBUG] Device has handshake_string: '{device_config.handshake_string}'")
         else:
@@ -229,7 +234,7 @@ def test_device_connection(port: str, device_config) -> bool:
     
     try:
         import serial
-        with serial.Serial(port, device_config.baud_rate, timeout=5) as ser:
+        with serial.Serial(port, detection_baud_rate, timeout=5) as ser:
             if DEBUG_MODE:
                 rprint(f"[yellow][DEBUG] Serial port opened successfully")
             

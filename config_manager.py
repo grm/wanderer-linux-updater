@@ -32,6 +32,7 @@ class DeviceConfig:
     programmer: str
     baud_rate: int
     handshake_string: Optional[str] = None
+    handshake_baud_rate: Optional[int] = None
 
 
 @dataclass
@@ -129,7 +130,8 @@ class ConfigManager:
                 avr_device=device_data.get('avr_device', ''),
                 programmer=device_data.get('programmer', ''),
                 baud_rate=device_data.get('baud_rate', 115200),
-                handshake_string=device_data.get('handshake_string', '')
+                handshake_string=device_data.get('handshake_string', ''),
+                handshake_baud_rate=device_data.get('handshake_baud_rate')
             )
         
         # Parse update configuration
