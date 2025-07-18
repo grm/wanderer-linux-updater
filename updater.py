@@ -96,7 +96,7 @@ def run_update(device, port, file, config_manager: ConfigManager):
     if not make_dry_run:
         if config_manager.update_config.confirm_update:
             rprint(
-                "Do you wish to execute \[yY] ? [red] (do NOT disconnect device before end of process)"
+                "Do you wish to execute \\[yY] ? [red] (do NOT disconnect device before end of process)"
             )
             execution_order = input()
             if execution_order == "y" or execution_order == "Y":
