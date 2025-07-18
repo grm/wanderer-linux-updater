@@ -322,25 +322,34 @@ def test_device_connection(port: str, device_config) -> bool:
                         if DEBUG_MODE:
                             rprint(f"[yellow][DEBUG] Received automatic data: '{new_data.strip()}'")
                         
-                        # Check if we have any response
-                        if DEBUG_MODE:
-                            rprint(f"[yellow][DEBUG] Checking response: '{repr(all_received_data)}'")
-                            rprint(f"[yellow][DEBUG] Stripped response: '{repr(all_received_data.strip())}'")
-                            rprint(f"[yellow][DEBUG] Response length: {len(all_received_data.strip())}")
-                        
                         # Filter out binary data and check for valid ASCII response
                         cleaned_data = ''.join(char for char in all_received_data if char.isprintable() or char in '\n\r\t')
                         if DEBUG_MODE:
                             rprint(f"[yellow][DEBUG] Cleaned data: '{repr(cleaned_data)}'")
                             rprint(f"[yellow][DEBUG] Cleaned data length: {len(cleaned_data)}")
                         
+                        # Check if we have any response
                         if cleaned_data.strip() and len(cleaned_data.strip()) > 0:
                             if DEBUG_MODE:
                                 rprint(f"[yellow][DEBUG] Found valid ASCII response: '{cleaned_data.strip()}'")
                                 rprint(f"[yellow][DEBUG] Response length: {len(cleaned_data.strip())}")
-                                rprint(f"[yellow][DEBUG] RETURNING TRUE HERE")
-                            rprint(f"[green]✓ Device {device_config.name} detected on {port}[/green]")
-                            return True
+                            
+                            # Always check if response contains device identifier
+                            device_name_lower = device_config.name.lower()
+                            cleaned_lower = cleaned_data.lower()
+                            
+                            if DEBUG_MODE:
+                                rprint(f"[yellow][DEBUG] Checking if '{device_name_lower}' is in response")
+                            
+                            if device_name_lower in cleaned_lower or "wanderer" in cleaned_lower:
+                                if DEBUG_MODE:
+                                    rprint(f"[yellow][DEBUG] Device pattern found in response!")
+                                    rprint(f"[yellow][DEBUG] RETURNING TRUE HERE")
+                                rprint(f"[green]✓ Device {device_config.name} detected on {port}[/green]")
+                                return True
+                            else:
+                                if DEBUG_MODE:
+                                    rprint(f"[yellow][DEBUG] No device pattern found in response, continuing...")
                         elif DEBUG_MODE:
                             rprint(f"[yellow][DEBUG] No valid ASCII response yet, continuing to wait...")
                     
