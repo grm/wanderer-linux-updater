@@ -159,14 +159,34 @@ class ConfigManager:
     
     def find_device_by_handshake(self, handshake_response: str) -> Optional[DeviceConfig]:
         """Find device by handshake response (model name before first 'A')."""
+        if DEBUG_MODE:
+            rprint(f"[yellow][DEBUG][ConfigManager] Finding device for handshake response: '{handshake_response}'")
+        
         # Extract model name before first 'A'
         model_name = handshake_response.split('A', 1)[0].strip()
+        if DEBUG_MODE:
+            rprint(f"[yellow][DEBUG][ConfigManager] Extracted model name: '{model_name}'")
+        
         if model_name in self.devices:
+            if DEBUG_MODE:
+                rprint(f"[yellow][DEBUG][ConfigManager] Found exact match: {model_name}")
             return self.devices[model_name]
+        
         # Fallback: try handshake_string
+        if DEBUG_MODE:
+            rprint(f"[yellow][DEBUG][ConfigManager] No exact match, trying handshake_string fallback")
+        
         for device_name, device_config in self.devices.items():
+            if DEBUG_MODE:
+                rprint(f"[yellow][DEBUG][ConfigManager] Checking device {device_name} with handshake_string '{device_config.handshake_string}'")
+            
             if device_config.handshake_string.lower() in handshake_response.lower():
+                if DEBUG_MODE:
+                    rprint(f"[yellow][DEBUG][ConfigManager] Found match with handshake_string: {device_name}")
                 return device_config
+        
+        if DEBUG_MODE:
+            rprint(f"[yellow][DEBUG][ConfigManager] No device matched for response: '{handshake_response}'")
         return None
     
     def validate_config(self) -> List[str]:
