@@ -17,10 +17,13 @@ try:
 except ImportError:
     rprint = print
 
-try:
-    from updater import DEBUG_MODE
-except ImportError:
-    DEBUG_MODE = False
+# Global debug mode - will be set by updater.py
+DEBUG_MODE = False
+
+def set_debug_mode(enabled: bool):
+    """Set debug mode for this module."""
+    global DEBUG_MODE
+    DEBUG_MODE = enabled
 
 
 @dataclass

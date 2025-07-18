@@ -22,8 +22,8 @@ from rich.panel import Panel
 from typing import IO, Optional, List, Dict
 
 # Import our modules
-from config_manager import ConfigManager
-from device_detector import DeviceDetector, DetectedDevice
+from config_manager import ConfigManager, set_debug_mode as set_config_debug_mode
+from device_detector import DeviceDetector, DetectedDevice, set_debug_mode as set_detector_debug_mode
 
 make_dry_run = False
 DEBUG_MODE = False
@@ -332,6 +332,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
     make_dry_run = args.d
     DEBUG_MODE = args.debug
+    
+    # Set debug mode in imported modules
+    set_config_debug_mode(DEBUG_MODE)
+    set_detector_debug_mode(DEBUG_MODE)
+    
     if DEBUG_MODE:
         rprint("[yellow][DEBUG] Debug mode enabled[/yellow]")
     main(config_file=args.config)
