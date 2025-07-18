@@ -77,7 +77,8 @@ devices:
     avr_device: "m168p"
     programmer: "arduino"
     baud_rate: 115200
-    handshake_string: "???"
+    handshake_string: "1500001"
+    # Device responds to handshake_string command
     
   WandererBoxPlusV3:
     avr_device: "m168p"
@@ -95,13 +96,13 @@ devices:
     avr_device: "m168p"
     programmer: "arduino"
     baud_rate: 115200
-    handshake_string: "WandererCoverV4"
+    # No handshake_string = device sends automatic response on connection
     
   WandererCoverV4Pro:
     avr_device: "m168p"
     programmer: "arduino"
     baud_rate: 115200
-    handshake_string: "WandererCoverV4"
+    # No handshake_string = device sends automatic response on connection
     
   WandererDewTerminator:
     avr_device: "m168p"

@@ -221,7 +221,11 @@ def test_device_connection(port: str, device_config) -> bool:
     rprint(f"[blue]Testing connection to {device_config.name} on {port}...[/blue]")
     
     if DEBUG_MODE:
-        rprint(f"[yellow][DEBUG] Testing device {device_config.name} with handshake_string '{device_config.handshake_string}' on {port} at {device_config.baud_rate} baud")
+        rprint(f"[yellow][DEBUG] Testing device {device_config.name} on {port} at {device_config.baud_rate} baud")
+        if device_config.handshake_string:
+            rprint(f"[yellow][DEBUG] Device has handshake_string: '{device_config.handshake_string}'")
+        else:
+            rprint(f"[yellow][DEBUG] Device has no handshake_string - waiting for automatic response")
     
     try:
         import serial
@@ -233,71 +237,80 @@ def test_device_connection(port: str, device_config) -> bool:
             ser.reset_input_buffer()
             ser.reset_output_buffer()
             
-            # Try handshake commands
-            for command in ["VERSION", "DEVICE", "ID"]:
-                try:
-                    if DEBUG_MODE:
-                        rprint(f"[yellow][DEBUG] Sending handshake command '{command}' to {port}")
-                    
-                    # Send command with newline
-                    ser.write(f"{command}\n".encode('utf-8'))
-                    ser.flush()
-                    
-                    # Wait for response
-                    import time
-                    time.sleep(0.5)
-                    
-                    # Read response
+            if device_config.handshake_string:
+                # Case 1: Device has handshake_string - send it and wait for response
+                if DEBUG_MODE:
+                    rprint(f"[yellow][DEBUG] Sending handshake_string '{device_config.handshake_string}'")
+                
+                # Send the handshake string
+                ser.write(f"{device_config.handshake_string}\n".encode('utf-8'))
+                ser.flush()
+                
+                # Wait for response (up to 5 seconds)
+                import time
+                start_time = time.time()
+                while time.time() - start_time < 5.0:
                     if ser.in_waiting > 0:
                         response = ser.read(ser.in_waiting).decode('utf-8', errors='ignore')
                         if DEBUG_MODE:
-                            rprint(f"[yellow][DEBUG] Response to '{command}': '{response.strip()}'")
+                            rprint(f"[yellow][DEBUG] Response received: '{response.strip()}'")
                         
                         if response.strip():
-                            # Check if response contains the expected handshake string
-                            if device_config.handshake_string.lower() in response.lower():
-                                if DEBUG_MODE:
-                                    rprint(f"[yellow][DEBUG] Found matching handshake string '{device_config.handshake_string}' in response")
-                                rprint(f"[green]✓ Device {device_config.name} detected on {port}[/green]")
-                                return True
-                            else:
-                                if DEBUG_MODE:
-                                    rprint(f"[yellow][DEBUG] Handshake string '{device_config.handshake_string}' not found in response")
-                    else:
-                        if DEBUG_MODE:
-                            rprint(f"[yellow][DEBUG] No response to '{command}'")
-                    
-                    # Try without newline
-                    ser.write(f"{command}".encode('utf-8'))
-                    ser.flush()
-                    time.sleep(0.5)
-                    
-                    if ser.in_waiting > 0:
-                        response = ser.read(ser.in_waiting).decode('utf-8', errors='ignore')
-                        if DEBUG_MODE:
-                            rprint(f"[yellow][DEBUG] Response to '{command}' (no newline): '{response.strip()}'")
-                        
-                        if response.strip():
-                            # Check if response contains the expected handshake string
-                            if device_config.handshake_string.lower() in response.lower():
-                                if DEBUG_MODE:
-                                    rprint(f"[yellow][DEBUG] Found matching handshake string '{device_config.handshake_string}' in response")
-                                rprint(f"[green]✓ Device {device_config.name} detected on {port}[/green]")
-                                return True
-                            else:
-                                if DEBUG_MODE:
-                                    rprint(f"[yellow][DEBUG] Handshake string '{device_config.handshake_string}' not found in response")
-                        else:
                             if DEBUG_MODE:
-                                rprint(f"[yellow][DEBUG] No response to '{command}' (no newline)")
-                                
-                except Exception as e:
-                    if DEBUG_MODE:
-                        rprint(f"[yellow][DEBUG] Exception during handshake command '{command}': {e}")
-                    continue
-            
-            if DEBUG_MODE:
-                rprint(f"[yellow][DEBUG] No matching handshake response found for {device_config.name}")
+                                rprint(f"[yellow][DEBUG] Device responded to handshake_string")
+                            rprint(f"[green]✓ Device {device_config.name} detected on {port}[/green]")
+                            return True
+                    
+                    time.sleep(0.1)  # Check every 100ms
+                
+                # Try without newline if no response with newline
+                if DEBUG_MODE:
+                    rprint(f"[yellow][DEBUG] No response with newline, trying without newline")
+                
+                ser.write(f"{device_config.handshake_string}".encode('utf-8'))
+                ser.flush()
+                
+                start_time = time.time()
+                while time.time() - start_time < 5.0:
+                    if ser.in_waiting > 0:
+                        response = ser.read(ser.in_waiting).decode('utf-8', errors='ignore')
+                        if DEBUG_MODE:
+                            rprint(f"[yellow][DEBUG] Response received (no newline): '{response.strip()}'")
+                        
+                        if response.strip():
+                            if DEBUG_MODE:
+                                rprint(f"[yellow][DEBUG] Device responded to handshake_string (no newline)")
+                            rprint(f"[green]✓ Device {device_config.name} detected on {port}[/green]")
+                            return True
+                    
+                    time.sleep(0.1)
+                
+                if DEBUG_MODE:
+                    rprint(f"[yellow][DEBUG] No response to handshake_string after 5 seconds")
+                
+            else:
+                # Case 2: Device has no handshake_string - wait for automatic response
+                if DEBUG_MODE:
+                    rprint(f"[yellow][DEBUG] Waiting for automatic response (up to 5 seconds)")
+                
+                import time
+                start_time = time.time()
+                while time.time() - start_time < 5.0:
+                    if ser.in_waiting > 0:
+                        response = ser.read(ser.in_waiting).decode('utf-8', errors='ignore')
+                        if DEBUG_MODE:
+                            rprint(f"[yellow][DEBUG] Automatic response received: '{response.strip()}'")
+                        
+                        if response.strip():
+                            if DEBUG_MODE:
+                                rprint(f"[yellow][DEBUG] Device sent automatic response")
+                            rprint(f"[green]✓ Device {device_config.name} detected on {port}[/green]")
+                            return True
+                    
+                    time.sleep(0.1)  # Check every 100ms
+                
+                if DEBUG_MODE:
+                    rprint(f"[yellow][DEBUG] No automatic response received after 5 seconds")
             
             rprint(f"[yellow]⚠ No {device_config.name} detected on {port}[/yellow]")
             rprint("[blue]You can still proceed with the update if you're sure the device is connected.[/blue]")

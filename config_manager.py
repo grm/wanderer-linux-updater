@@ -31,7 +31,7 @@ class DeviceConfig:
     avr_device: str
     programmer: str
     baud_rate: int
-    handshake_string: str
+    handshake_string: Optional[str] = None
 
 
 @dataclass
@@ -209,8 +209,7 @@ class ConfigManager:
                 errors.append(f"Device {device_name}: avr_device is required")
             if not device_config.programmer:
                 errors.append(f"Device {device_name}: programmer is required")
-            if not device_config.handshake_string:
-                errors.append(f"Device {device_name}: handshake_string is required")
+            # handshake_string is optional - some devices respond automatically
         
         return errors
     
