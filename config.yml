@@ -41,49 +41,49 @@ devices:
     avr_device: "m328p"
     programmer: "arduino"
     baud_rate: 115200
-    handshake_baud_rate: 115200
+    handshake_baud_rate: 19200
     handshake_string: "1500001"
     
   WandererRotatorLiteV1:
     avr_device: "m328p"
     programmer: "arduino"
     baud_rate: 115200
-    handshake_baud_rate: 115200
+    handshake_baud_rate: 19200
     handshake_string: "1500001"
     
   WandererRotatorLiteV2:
     avr_device: "m328p"
     programmer: "arduino"
     baud_rate: 57600
-    handshake_baud_rate: 57600
+    handshake_baud_rate: 19200
     handshake_string: "1500001"
     
   WandererRotatorProV1:
     avr_device: "m328p"
     programmer: "arduino"
     baud_rate: 57600
-    handshake_baud_rate: 57600
+    handshake_baud_rate: 19200
     handshake_string: "1500001"
     
   WandererBoxPlusV2:
     avr_device: "m168p"
     programmer: "arduino"
     baud_rate: 115200
-    handshake_baud_rate: 115200
+    handshake_baud_rate: 19200
     handshake_string: "XXX"
     
   WandererBoxUltimateV2:
     avr_device: "m328p"
     programmer: "arduino"
     baud_rate: 57600
-    handshake_baud_rate: 57600
+    handshake_baud_rate: 19200
     handshake_string: "XXX"
     
   WandererCoverV3:
     avr_device: "m168p"
     programmer: "arduino"
     baud_rate: 115200
-    handshake_baud_rate: 115200
+    handshake_baud_rate: 19200
     handshake_string: "1500001"
     # Device responds to handshake_string command
     
@@ -91,14 +91,14 @@ devices:
     avr_device: "m168p"
     programmer: "arduino"
     baud_rate: 115200
-    handshake_baud_rate: 115200
+    handshake_baud_rate: 19200
     handshake_string: "ZXWBPlusV3"
     
   WandererBoxProV3:
     avr_device: "m168p"
     programmer: "arduino"
     baud_rate: 115200
-    handshake_baud_rate: 115200
+    handshake_baud_rate: 19200
     handshake_string: "ZXWBProV3"
     
   WandererCoverV4:
@@ -119,28 +119,28 @@ devices:
     avr_device: "m168p"
     programmer: "arduino"
     baud_rate: 115200
-    handshake_baud_rate: 115200
+    handshake_baud_rate: 19200
     handshake_string: "XXX"
     
   WandererEclipse:
     avr_device: "m168p"
     programmer: "arduino"
     baud_rate: 115200
-    handshake_baud_rate: 115200
+    handshake_baud_rate: 19200
     handshake_string: "XXX"
     
   WandererRotatorProV2:
     avr_device: "m168p"
     programmer: "arduino"
     baud_rate: 115200
-    handshake_baud_rate: 115200
+    handshake_baud_rate: 19200
     handshake_string: "1500001"
     
   WandererETA54:
     avr_device: "m168p"
     programmer: "arduino"
     baud_rate: 115200
-    handshake_baud_rate: 115200
+    handshake_baud_rate: 19200
     handshake_string: "XXX"
 
 # Update configuration
