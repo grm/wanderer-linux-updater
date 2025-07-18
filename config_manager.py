@@ -10,6 +10,16 @@ from pathlib import Path
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
 
+try:
+    from rich import print as rprint
+except ImportError:
+    rprint = print
+
+try:
+    from updater import DEBUG_MODE
+except ImportError:
+    DEBUG_MODE = False
+
 
 @dataclass
 class DeviceConfig:
@@ -76,14 +86,18 @@ class ConfigManager:
         """Load configuration from YAML file."""
         if not self.config_file.exists():
             raise FileNotFoundError(f"Configuration file not found: {self.config_file}")
-        
+        if DEBUG_MODE:
+            rprint(f"[yellow][DEBUG][ConfigManager] Loading config file: {self.config_file}[/yellow]")
         try:
             with open(self.config_file, 'r', encoding='utf-8') as f:
                 self.config_data = yaml.safe_load(f)
+            if DEBUG_MODE:
+                rprint(f"[yellow][DEBUG][ConfigManager] Raw config data: {self.config_data}[/yellow]")
         except yaml.YAMLError as e:
             raise ValueError(f"Invalid YAML configuration: {e}")
-        
         self._validate_and_parse_config()
+        if DEBUG_MODE:
+            rprint(f"[yellow][DEBUG][ConfigManager] Config parsed: {self.get_config_summary()}[/yellow]")
     
     def _validate_and_parse_config(self):
         """Validate and parse configuration sections."""

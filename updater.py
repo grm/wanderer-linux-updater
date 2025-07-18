@@ -21,6 +21,7 @@ from config_manager import ConfigManager
 from device_detector import DeviceDetector, DetectedDevice
 
 make_dry_run = False
+DEBUG_MODE = False
 
 
 class WandererParser(argparse.ArgumentParser):
@@ -130,13 +131,14 @@ def get_firmware_index(github_repo=None):
     """Get firmware index from GitHub Pages."""
     if not github_repo:
         github_repo = "your-username/wanderer-linux-updater"  # Update with your repo
-    
-    print(f"DEBUG: github_repo = {github_repo!r}")
+    if DEBUG_MODE:
+        rprint(f"[yellow][DEBUG] get_firmware_index() using github_repo={github_repo}[/yellow]")
     if not github_repo or '/' not in github_repo:
         raise ValueError(f"Invalid github_repo format: '{github_repo}'. Expected 'username/reponame'.")
     parts = github_repo.split('/')
     index_url = f"https://{parts[0]}.github.io/{parts[1]}/firmware_index.json"
-    
+    if DEBUG_MODE:
+        rprint(f"[yellow][DEBUG] Firmware index URL: {index_url}[/yellow]")
     try:
         rprint(f"[blue]Downloading firmware index from: {index_url}[/blue]")
         response = requests.get(index_url, timeout=30)
@@ -266,14 +268,17 @@ def main(firmware_url=None, firmware_file=None, github_repo=None, config_file="c
     rprint(
         Panel("[green]Welcome to [red]Wanderer astro[/red] linux update tool ![/green]")
     )
-    
+    if DEBUG_MODE:
+        rprint(f"[yellow][DEBUG] main() called with config_file={config_file}[/yellow]")
     # Load configuration
     try:
         config_manager = ConfigManager(config_file)
+        if DEBUG_MODE:
+            rprint(f"[yellow][DEBUG] Configuration loaded from {config_file}[/yellow]")
+            rprint(f"[yellow][DEBUG] Config summary: {config_manager.get_config_summary()}[/yellow]")
     except Exception as e:
         rprint(f"[red]Error loading configuration: {e}[/red]")
         return
-    
     # Validate configuration
     errors = config_manager.validate_config()
     if errors:
@@ -281,16 +286,21 @@ def main(firmware_url=None, firmware_file=None, github_repo=None, config_file="c
         for error in errors:
             rprint(f"  [red]- {error}[/red]")
         return
-    
     firmware_path = None
-    
     # Mode unique : détection automatique au démarrage
+    github_repo = config_manager.firmware_config.github_repo
+    if DEBUG_MODE:
+        rprint(f"[yellow][DEBUG] github_repo from config: {github_repo}[/yellow]")
     firmware_index = get_firmware_index(github_repo)
     if not firmware_index:
         rprint("[red]Failed to download firmware index. Exiting.[/red]")
         return
+    if DEBUG_MODE:
+        rprint(f"[yellow][DEBUG] Firmware index loaded: {firmware_index}[/yellow]")
     # Scan all USB/ACM ports for Wanderer devices
     detected = scan_and_detect_devices_with_versions(config_manager, firmware_index)
+    if DEBUG_MODE:
+        rprint(f"[yellow][DEBUG] Detected devices: {detected}[/yellow]")
     if detected:
         rprint("[green]Appareils Wanderer détectés :[/green]")
         choices = []
@@ -342,12 +352,6 @@ def main(firmware_url=None, firmware_file=None, github_repo=None, config_file="c
 if __name__ == "__main__":
     parser = WandererParser(description="WandererLinuxUpdater help")
     parser.add_argument(
-        "-g", "--github",
-        type=str,
-        required=True,
-        help="GitHub repository for firmware index (format: username/repo)"
-    )
-    parser.add_argument(
         "-c", "--config",
         type=str,
         default="config.yml",
@@ -358,9 +362,14 @@ if __name__ == "__main__":
         action="store_true",
         help="Do a dry run (print avr command instead of executing it)",
     )
-
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Enable debug output"
+    )
     args = parser.parse_args()
     make_dry_run = args.d
-    
-    # Mode unique : détection automatique
-    main(github_repo=args.github, config_file=args.config)
+    DEBUG_MODE = args.debug
+    if DEBUG_MODE:
+        rprint("[yellow][DEBUG] Debug mode enabled[/yellow]")
+    main(config_file=args.config)

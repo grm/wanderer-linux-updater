@@ -12,6 +12,16 @@ from typing import List, Optional, Tuple, Dict
 from dataclasses import dataclass
 from config_manager import ConfigManager, DeviceConfig
 
+try:
+    from rich import print as rprint
+except ImportError:
+    rprint = print
+
+try:
+    from updater import DEBUG_MODE
+except ImportError:
+    DEBUG_MODE = False
+
 
 @dataclass
 class DetectedDevice:
@@ -49,10 +59,14 @@ class DeviceDetector:
                 result.append(port)
             except (OSError, serial.SerialException):
                 pass
+        if DEBUG_MODE:
+            rprint(f"[yellow][DEBUG][DeviceDetector] Available ports: {result}")
         return result
     
     def try_handshake(self, port: str, baud_rate: int, timeout: int = 5) -> Optional[str]:
         """Try to perform handshake with device on given port."""
+        if DEBUG_MODE:
+            rprint(f"[yellow][DEBUG][DeviceDetector] Trying handshake on port {port} at {baud_rate} baud");
         try:
             with serial.Serial(port, baud_rate, timeout=timeout) as ser:
                 # Clear any existing data
@@ -62,6 +76,8 @@ class DeviceDetector:
                 # Try each handshake command
                 for command in self.detection_config.handshake_commands:
                     try:
+                        if DEBUG_MODE:
+                            rprint(f"[yellow][DEBUG][DeviceDetector] Sending handshake command '{command}' to {port}")
                         # Send command with newline
                         ser.write(f"{command}\n".encode('utf-8'))
                         ser.flush()
@@ -72,6 +88,8 @@ class DeviceDetector:
                         # Read response
                         if ser.in_waiting > 0:
                             response = ser.read(ser.in_waiting).decode('utf-8', errors='ignore')
+                            if DEBUG_MODE:
+                                rprint(f"[yellow][DEBUG][DeviceDetector] Response to '{command}': {response.strip()}")
                             if response.strip():
                                 return response.strip()
                         
@@ -82,37 +100,45 @@ class DeviceDetector:
                         
                         if ser.in_waiting > 0:
                             response = ser.read(ser.in_waiting).decode('utf-8', errors='ignore')
+                            if DEBUG_MODE:
+                                rprint(f"[yellow][DEBUG][DeviceDetector] Response to '{command}' (no newline): {response.strip()}")
                             if response.strip():
                                 return response.strip()
                                 
                     except Exception as e:
+                        if DEBUG_MODE:
+                            rprint(f"[yellow][DEBUG][DeviceDetector] Exception during handshake command '{command}': {e}")
                         continue
                 
                 return None
                 
         except Exception as e:
+            if DEBUG_MODE:
+                rprint(f"[yellow][DEBUG][DeviceDetector] Exception opening port {port} at {baud_rate}: {e}")
             return None
     
     def detect_devices(self) -> List[DetectedDevice]:
         """Detect all connected devices."""
         detected_devices = []
         available_ports = self.get_available_ports()
-        
+        if DEBUG_MODE:
+            rprint(f"[yellow][DEBUG][DeviceDetector] Starting detection on ports: {available_ports}")
         if not available_ports:
             return detected_devices
-        
         for port in available_ports:
             for baud_rate in self.detection_config.baud_rates:
+                if DEBUG_MODE:
+                    rprint(f"[yellow][DEBUG][DeviceDetector] Testing port {port} at baud {baud_rate}")
                 handshake_response = self.try_handshake(
                     port, 
                     baud_rate, 
                     self.detection_config.handshake_timeout
                 )
-                
                 if handshake_response:
+                    if DEBUG_MODE:
+                        rprint(f"[yellow][DEBUG][DeviceDetector] Handshake response on {port} ({baud_rate}): {handshake_response}")
                     # Try to identify device from response
                     device_config = self.config.find_device_by_handshake(handshake_response)
-                    
                     if device_config:
                         detected_device = DetectedDevice(
                             port=port,
@@ -121,30 +147,38 @@ class DeviceDetector:
                             baud_rate=baud_rate
                         )
                         detected_devices.append(detected_device)
+                        if DEBUG_MODE:
+                            rprint(f"[yellow][DEBUG][DeviceDetector] Device detected: {detected_device}")
                         break  # Found device on this port, try next port
-        
+        if DEBUG_MODE:
+            rprint(f"[yellow][DEBUG][DeviceDetector] Detection finished. Devices: {detected_devices}")
         return detected_devices
     
     def detect_single_device(self, port: str) -> Optional[DetectedDevice]:
         """Detect device on specific port."""
+        if DEBUG_MODE:
+            rprint(f"[yellow][DEBUG][DeviceDetector] Detecting single device on port {port}")
         for baud_rate in self.detection_config.baud_rates:
             handshake_response = self.try_handshake(
                 port, 
                 baud_rate, 
                 self.detection_config.handshake_timeout
             )
-            
             if handshake_response:
+                if DEBUG_MODE:
+                    rprint(f"[yellow][DEBUG][DeviceDetector] Handshake response on {port} ({baud_rate}): {handshake_response}")
                 device_config = self.config.find_device_by_handshake(handshake_response)
-                
                 if device_config:
+                    if DEBUG_MODE:
+                        rprint(f"[yellow][DEBUG][DeviceDetector] Device found: {device_config}")
                     return DetectedDevice(
                         port=port,
                         device_config=device_config,
                         handshake_response=handshake_response,
                         baud_rate=baud_rate
                     )
-        
+        if DEBUG_MODE:
+            rprint(f"[yellow][DEBUG][DeviceDetector] No device detected on port {port}")
         return None
     
     def get_device_info(self, detected_device: DetectedDevice) -> Dict[str, str]:

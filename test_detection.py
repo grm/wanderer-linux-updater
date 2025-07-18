@@ -14,15 +14,20 @@ from device_detector import DeviceDetector
 from rich import print as rprint
 from rich.panel import Panel
 
+DEBUG_MODE = False
+
 
 def main():
     """Test device detection."""
     rprint(Panel("[green]Wanderer Device Detection Test[/green]"))
-    
+    if DEBUG_MODE:
+        rprint(f"[yellow][DEBUG][test_detection] Debug mode enabled[/yellow]")
     try:
         # Load configuration
         config_manager = ConfigManager()
-        rprint("[green]✓ Configuration loaded successfully[/green]")
+        if DEBUG_MODE:
+            rprint(f"[yellow][DEBUG][test_detection] Configuration loaded[/yellow]")
+        rprint("[green]\u2713 Configuration loaded successfully[/green]")
         
         # Validate configuration
         errors = config_manager.validate_config()
@@ -31,7 +36,9 @@ def main():
             for error in errors:
                 rprint(f"  [red]- {error}[/red]")
             return
-        rprint("[green]✓ Configuration validated successfully[/green]")
+        if DEBUG_MODE:
+            rprint(f"[yellow][DEBUG][test_detection] Configuration validated successfully[/yellow]")
+        rprint("[green]\u2713 Configuration validated successfully[/green]")
         
         # Show configuration summary
         summary = config_manager.get_config_summary()
@@ -39,6 +46,8 @@ def main():
         rprint(f"  - Devices configured: {summary['devices_count']}")
         rprint(f"  - Auto-detect: {summary['auto_detect']}")
         rprint(f"  - Dry run: {summary['dry_run']}")
+        if DEBUG_MODE:
+            rprint(f"[yellow][DEBUG][test_detection] Config summary: {summary}")
         
         # Test device detection
         detector = DeviceDetector(config_manager)
@@ -46,6 +55,8 @@ def main():
         # Get available ports
         ports = detector.get_available_ports()
         rprint(f"[blue]Available ports:[/blue] {ports}")
+        if DEBUG_MODE:
+            rprint(f"[yellow][DEBUG][test_detection] Ports found: {ports}")
         
         if not ports:
             rprint("[yellow]No serial ports found[/yellow]")
@@ -54,9 +65,11 @@ def main():
         # Detect devices
         rprint("[blue]Detecting devices...[/blue]")
         detected_devices = detector.detect_devices()
+        if DEBUG_MODE:
+            rprint(f"[yellow][DEBUG][test_detection] Detected devices: {detected_devices}")
         
         if detected_devices:
-            rprint(f"[green]✓ Detected {len(detected_devices)} device(s):[/green]")
+            rprint(f"[green]\u2713 Detected {len(detected_devices)} device(s):[/green]")
             for i, device in enumerate(detected_devices):
                 info = detector.get_device_info(device)
                 rprint(f"  [green]{i+1}.[/green] {info['name']}")
@@ -79,11 +92,13 @@ def main():
         for port in ports[:3]:  # Test first 3 ports
             rprint(f"  Testing port {port}...")
             device = detector.detect_single_device(port)
+            if DEBUG_MODE:
+                rprint(f"[yellow][DEBUG][test_detection] Single device detection result for {port}: {device}")
             if device:
                 info = detector.get_device_info(device)
-                rprint(f"    ✓ Found {info['name']} on {port}")
+                rprint(f"    \u2713 Found {info['name']} on {port}")
             else:
-                rprint(f"    ✗ No device detected on {port}")
+                rprint(f"    \u2717 No device detected on {port}")
         
     except Exception as e:
         rprint(f"[red]Error: {e}[/red]")
@@ -92,4 +107,11 @@ def main():
 
 
 if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(description="Test Wanderer device detection")
+    parser.add_argument("--debug", action="store_true", help="Enable debug output")
+    args = parser.parse_args()
+    DEBUG_MODE = args.debug
+    if DEBUG_MODE:
+        rprint("[yellow][DEBUG][test_detection] Debug mode enabled (from CLI)")
     main() 
