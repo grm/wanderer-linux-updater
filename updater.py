@@ -272,7 +272,7 @@ def test_device_connection(port: str, device_config) -> bool:
                                     if DEBUG_MODE:
                                         rprint(f"[yellow][DEBUG] Analyzing line: '{line}'")
                                     # Check if this line indicates a response
-                                    if line and not line.startswith(device_config.handshake_string):
+                                    if line.startswith(device_config.handshake_string):
                                         if DEBUG_MODE:
                                             rprint(f"[yellow][DEBUG] Found response line: '{line}'")
                                         rprint(f"[green]✓ Device {device_config.name} detected on {port}[/green]")
