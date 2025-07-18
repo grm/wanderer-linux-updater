@@ -55,8 +55,6 @@ class UpdateConfig:
     """Configuration for update operations."""
     avrdude_timeout: int
     dry_run: bool
-    auto_detect: bool
-    auto_detect_port: bool
     confirm_update: bool
 
 
@@ -136,8 +134,6 @@ class ConfigManager:
         self.update_config = UpdateConfig(
             avrdude_timeout=update_data.get('avrdude_timeout', 60),
             dry_run=update_data.get('dry_run', False),
-            auto_detect=update_data.get('auto_detect', True),
-            auto_detect_port=update_data.get('auto_detect_port', True),
             confirm_update=update_data.get('confirm_update', True)
         )
         
@@ -209,6 +205,5 @@ class ConfigManager:
             },
             'devices_count': len(self.devices),
             'device_names': list(self.devices.keys()),
-            'auto_detect': self.update_config.auto_detect,
             'dry_run': self.update_config.dry_run
         } 

@@ -18,7 +18,7 @@ firmware:
   # Index file name
   index_file: "firmware_index.json"
 
-# Device detection configuration
+# Device detection configuration (for port detection and handshake testing)
 device_detection:
   # Handshake timeout in seconds
   handshake_timeout: 5
@@ -134,12 +134,6 @@ update:
   
   # Dry run mode (default: false)
   dry_run: false
-  
-  # Auto-detect device (default: true)
-  auto_detect: true
-  
-  # Auto-detect port (default: true)
-  auto_detect_port: true
   
   # Confirm before update (default: true)
   confirm_update: true

@@ -1,11 +1,12 @@
 # Wanderer Linux Updater
 
-Un outil de mise à jour de firmware pour les appareils Wanderer Astro, avec détection automatique d'appareils et synchronisation de firmware via GitHub.
+Un outil de mise à jour de firmware pour les appareils Wanderer Astro, avec sélection manuelle d'appareils et synchronisation de firmware via GitHub.
 
 ## Fonctionnalités
 
 - **Configuration YAML** : Configuration centralisée et flexible
-- **Détection automatique d'appareils** : Handshake pour identifier les appareils connectés
+- **Sélection manuelle d'appareils** : Interface utilisateur pour choisir le type d'appareil
+- **Détection de ports USB** : Détection automatique des ports série disponibles
 - **Synchronisation automatique** : GitHub Actions pour synchroniser les firmwares
 - **Hébergement GitHub Pages** : Firmwares hébergés de manière fiable
 - **Support multi-appareils** : Tous les appareils Wanderer supportés
@@ -36,7 +37,7 @@ firmware:
   github_repo: "your-username/wanderer-linux-updater"
   sync_interval_hours: 6
 
-# Configuration de détection d'appareils
+# Configuration de détection de ports (pour tests)
 device_detection:
   handshake_timeout: 5
   baud_rates: [115200, 57600, 9600]
@@ -53,43 +54,53 @@ devices:
 
 ## Utilisation
 
-### Mode GitHub (recommandé)
+### Mise à jour interactive (recommandé)
 
 ```bash
-# Utiliser les firmwares hébergés sur GitHub
-python updater.py --github your-username/wanderer-linux-updater
+# Lancer l'outil de mise à jour interactif
+python updater.py
 ```
 
-### Mode URL
-
-```bash
-# Utiliser une liste de firmwares depuis une URL
-python updater.py --url https://your-url.com/firmware-list.txt
-```
-
-### Mode fichier local
-
-```bash
-# Utiliser un fichier firmware local
-python updater.py --file firmware.hex
-```
+L'outil vous guidera à travers les étapes suivantes :
+1. **Sélection du type d'appareil** : Choisissez parmi les appareils configurés
+2. **Sélection du port série** : Choisissez parmi les ports USB disponibles
+3. **Test de connexion** : Vérification optionnelle de la présence de l'appareil
+4. **Sélection du firmware** : Choisissez la version de firmware à installer
+5. **Mise à jour** : Exécution de la mise à jour
 
 ### Options supplémentaires
 
 ```bash
 # Utiliser un fichier de configuration personnalisé
-python updater.py --github your-username/repo --config my-config.yml
+python updater.py --config my-config.yml
 
 # Mode dry-run (affiche la commande sans l'exécuter)
-python updater.py --github your-username/repo --dry-run
+python updater.py --dry-run
+
+# Mode debug
+python updater.py --debug
 ```
 
-## Détection d'appareils
+## Scripts utilitaires
 
-Le système peut détecter automatiquement les appareils connectés via handshake :
+### Lister les appareils configurés
 
 ```bash
-# Tester la détection d'appareils
+# Afficher tous les appareils configurés avec leurs paramètres
+python list_devices.py
+```
+
+### Tester la détection de ports USB
+
+```bash
+# Tester la détection des ports série disponibles
+python test_ports.py
+```
+
+### Tester la détection automatique (optionnel)
+
+```bash
+# Tester la détection automatique d'appareils via handshake
 python test_detection.py
 ```
 
@@ -117,9 +128,11 @@ wanderer-linux-updater/
 ├── scripts/sync_firmware.py             # Script de synchronisation
 ├── config.yml                           # Configuration principale
 ├── config_manager.py                    # Gestionnaire de configuration
-├── device_detector.py                   # Détection d'appareils
-├── updater.py                          # Script principal
-├── test_detection.py                   # Test de détection
+├── device_detector.py                   # Détection d'appareils (pour tests)
+├── updater.py                          # Script principal interactif
+├── test_detection.py                   # Test de détection automatique
+├── test_ports.py                       # Test de détection de ports
+├── list_devices.py                     # Liste des appareils configurés
 ├── firmware/                           # Firmwares (auto-généré)
 ├── firmware_index.json                 # Index des firmwares (auto-généré)
 └── README.md
@@ -139,48 +152,35 @@ wanderer-linux-updater/
 
 ## Configuration avancée
 
-### Handshake personnalisé
+### Ajouter un nouvel appareil
 
-Vous pouvez personnaliser les commandes de handshake dans `config.yml` :
-
-```yaml
-device_detection:
-  handshake_commands:
-    - "VERSION"
-    - "DEVICE"
-    - "ID"
-    - "WHOAMI"
-```
-
-### Réponses d'appareils
-
-Définissez les réponses attendues pour chaque appareil :
+Ajoutez une nouvelle entrée dans la section `devices` de `config.yml` :
 
 ```yaml
-device_detection:
-  device_responses:
-    WandererBoxPlusV3: ["WandererBoxPlusV3", "BoxPlusV3", "V3"]
-    WandererRotatorLiteV1: ["WandererRotatorLiteV1", "RotatorLiteV1"]
+devices:
+  MonNouvelAppareil:
+    avr_device: "m328p"
+    programmer: "arduino"
+    baud_rate: 115200
+    handshake_string: "MonNouvelAppareil"
 ```
 
 ### Configuration de mise à jour
 
 ```yaml
 update:
-  auto_detect: true          # Détection automatique d'appareils
-  auto_detect_port: true     # Détection automatique de port
   confirm_update: true        # Demander confirmation avant mise à jour
   dry_run: false             # Mode dry-run
 ```
 
 ## Dépannage
 
-### Aucun appareil détecté
+### Aucun port détecté
 
-1. Vérifiez que l'appareil est connecté
-2. Testez avec `python test_detection.py`
-3. Ajustez les commandes de handshake dans `config.yml`
-4. Vérifiez les taux de baud dans `config.yml`
+1. Vérifiez que l'appareil est connecté via USB
+2. Testez avec `python test_ports.py`
+3. Vérifiez les permissions sur `/dev/tty*` (Linux)
+4. Installez les drivers USB appropriés
 
 ### Erreurs de configuration
 
@@ -189,12 +189,18 @@ update:
 python -c "from config_manager import ConfigManager; ConfigManager().validate_config()"
 ```
 
-### Problèmes de port série
+### Problèmes de mise à jour
 
-```bash
-# Lister les ports disponibles
-python -c "from device_detector import DeviceDetector; from config_manager import ConfigManager; print(DeviceDetector(ConfigManager()).get_available_ports())"
-```
+1. Vérifiez que l'appareil est en mode bootloader
+2. Assurez-vous que `avrdude` est installé
+3. Vérifiez les permissions sur le port série
+4. Testez avec le mode `--dry-run` d'abord
+
+### Erreurs de téléchargement de firmware
+
+1. Vérifiez la connectivité internet
+2. Vérifiez l'URL du firmware dans la configuration
+3. Vérifiez que le repository GitHub est correctement configuré
 
 ## Contribution
 

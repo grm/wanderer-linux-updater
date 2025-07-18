@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Test script for device detection functionality.
+Test script for automatic device detection functionality.
+This script tests the handshake-based device detection system.
 """
 
 import sys
@@ -18,10 +19,11 @@ DEBUG_MODE = False
 
 
 def main():
-    """Test device detection."""
-    rprint(Panel("[green]Wanderer Device Detection Test[/green]"))
+    """Test automatic device detection."""
+    rprint(Panel("[green]Wanderer Automatic Device Detection Test[/green]"))
     if DEBUG_MODE:
         rprint(f"[yellow][DEBUG][test_detection] Debug mode enabled[/yellow]")
+    
     try:
         # Load configuration
         config_manager = ConfigManager()
@@ -44,7 +46,6 @@ def main():
         summary = config_manager.get_config_summary()
         rprint(f"[blue]Configuration Summary:[/blue]")
         rprint(f"  - Devices configured: {summary['devices_count']}")
-        rprint(f"  - Auto-detect: {summary['auto_detect']}")
         rprint(f"  - Dry run: {summary['dry_run']}")
         if DEBUG_MODE:
             rprint(f"[yellow][DEBUG][test_detection] Config summary: {summary}")
@@ -62,8 +63,9 @@ def main():
             rprint("[yellow]No serial ports found[/yellow]")
             return
         
-        # Detect devices
-        rprint("[blue]Detecting devices...[/blue]")
+        # Detect devices automatically
+        rprint("[blue]Testing automatic device detection...[/blue]")
+        rprint("[blue]This will attempt to identify Wanderer devices using handshake commands.[/blue]")
         detected_devices = detector.detect_devices()
         if DEBUG_MODE:
             rprint(f"[yellow][DEBUG][test_detection] Detected devices: {detected_devices}")
@@ -80,12 +82,13 @@ def main():
                 rprint(f"      Handshake response: {info['handshake_response']}")
                 rprint()
         else:
-            rprint("[yellow]No devices detected[/yellow]")
+            rprint("[yellow]No devices detected automatically[/yellow]")
             rprint("[blue]This could mean:[/blue]")
-            rprint("  - No devices are connected")
+            rprint("  - No Wanderer devices are connected")
             rprint("  - Devices are not responding to handshake commands")
             rprint("  - Handshake commands need to be adjusted")
             rprint("  - Baud rates need to be adjusted")
+            rprint("  - Device is not in bootloader mode")
         
         # Test individual port detection
         rprint("[blue]Testing individual port detection...[/blue]")
@@ -100,6 +103,12 @@ def main():
             else:
                 rprint(f"    \u2717 No device detected on {port}")
         
+        # Show available device types for manual selection
+        rprint("[blue]Available device types for manual selection:[/blue]")
+        for device_name in config_manager.get_device_names():
+            device_config = config_manager.get_device(device_name)
+            rprint(f"  - {device_name} ({device_config.avr_device}, {device_config.baud_rate} baud)")
+        
     except Exception as e:
         rprint(f"[red]Error: {e}[/red]")
         import traceback
@@ -108,7 +117,7 @@ def main():
 
 if __name__ == "__main__":
     import argparse
-    parser = argparse.ArgumentParser(description="Test Wanderer device detection")
+    parser = argparse.ArgumentParser(description="Test Wanderer automatic device detection")
     parser.add_argument("--debug", action="store_true", help="Enable debug output")
     args = parser.parse_args()
     DEBUG_MODE = args.debug
