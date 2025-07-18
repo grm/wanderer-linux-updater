@@ -298,37 +298,52 @@ def main(firmware_url=None, firmware_file=None, github_repo=None, config_file="c
     if DEBUG_MODE:
         rprint(f"[yellow][DEBUG] Firmware index loaded: {firmware_index}[/yellow]")
     # Scan all USB/ACM ports for Wanderer devices
-    detected = scan_and_detect_devices_with_versions(config_manager, firmware_index)
+    detector = DeviceDetector(config_manager)
+    detected_devices = detector.detect_devices()
     if DEBUG_MODE:
-        rprint(f"[yellow][DEBUG] Detected devices: {detected}[/yellow]")
-    if detected:
+        rprint(f"[yellow][DEBUG] Detected devices: {detected_devices}[/yellow]")
+    if detected_devices:
         rprint("[green]Appareils Wanderer détectés :[/green]")
         choices = []
-        for i, d in enumerate(detected):
-            choices.append(f"{d['port']} | {d['model']} | version actuelle: {d['current_version']} | version dispo: {d['available_version']}")
+        for i, d in enumerate(detected_devices):
+            info = detector.get_device_info(d)
+            # Recherche de la version actuelle (si possible)
+            current_version = "?"
+            try:
+                # On tente de parser la version depuis le handshake
+                if 'A' in d.handshake_response:
+                    current_version = d.handshake_response.split('A', 1)[1].strip()
+            except Exception:
+                pass
+            # Recherche de la version dispo
+            available_version = None
+            if firmware_index and 'devices' in firmware_index and info['name'] in firmware_index['devices']:
+                available_version = firmware_index['devices'][info['name']][0]['version']
+            choices.append(f"{info['port']} | {info['name']} | version actuelle: {current_version} | version dispo: {available_version}")
             rprint(f"  [yellow]{i}[/yellow] : [blue]{choices[-1]}")
         rprint("Votre choix : ")
         ichoice = input()
         try:
             choice = int(ichoice)
-            if choice < 0 or choice >= len(detected):
+            if choice < 0 or choice >= len(detected_devices):
                 rprint(f"[red]Erreur : numéro invalide[/red]")
                 return
         except ValueError:
             rprint(f"[red]Erreur : veuillez entrer un numéro valide[/red]")
             return
-        selected = detected[choice]
+        selected = detected_devices[choice]
+        info = detector.get_device_info(selected)
         # On lance la mise à jour sur ce port et ce modèle
-        available_firmware = get_available_firmware_for_device(selected['model'], firmware_index)
+        available_firmware = get_available_firmware_for_device(info['name'], firmware_index)
         if not available_firmware:
-            rprint(f"[red]Aucun firmware trouvé pour {selected['model']}")
+            rprint(f"[red]Aucun firmware trouvé pour {info['name']}")
             return
         # Trier du plus récent au plus ancien (ordre décroissant)
         available_firmware = sorted(available_firmware, key=lambda fw: fw['version_date'], reverse=True)
         # Proposer le choix de version si plusieurs
         if len(available_firmware) > 1:
             fw_choices = [f"{fw['version']} ({fw['filename']})" for fw in available_firmware]
-            fw_index = ask_question(f"Quelle version installer pour {selected['model']} ?", fw_choices)
+            fw_index = ask_question(f"Quelle version installer pour {info['name']} ?", fw_choices)
             selected_firmware = available_firmware[fw_index]
         else:
             selected_firmware = available_firmware[0]
@@ -338,8 +353,8 @@ def main(firmware_url=None, firmware_file=None, github_repo=None, config_file="c
                 rprint("[red]Echec du téléchargement du firmware. Abandon.[/red]")
                 return
             run_update(
-                [selected['model'], selected['device_config'].avr_device, selected['device_config'].programmer, str(selected['device_config'].baud_rate)],
-                selected['port'],
+                [info['name'], selected.device_config.avr_device, selected.device_config.programmer, str(selected.device_config.baud_rate)],
+                info['port'],
                 firmware_path,
                 config_manager
             )
