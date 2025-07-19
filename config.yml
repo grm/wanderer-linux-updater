@@ -31,7 +31,7 @@ devices:
     baud_rate: 115200
     handshake_baud_rate: 19200
     handshake_command: "1500001"
-    handshake_response: "1500001"
+    handshake_response: "WandererRotatorMini"
     
   WandererRotatorLiteV1:
     avr_device: "m328p"
@@ -86,7 +86,6 @@ devices:
     programmer: "arduino"
     baud_rate: 115200
     handshake_baud_rate: 19200
-    handshake_command: "ZXWBPlusV3"
     handshake_response: "ZXWBPlusV3"
     
   WandererBoxProV3:
@@ -94,7 +93,6 @@ devices:
     programmer: "arduino"
     baud_rate: 115200
     handshake_baud_rate: 19200
-    handshake_command: "ZXWBProV3"
     handshake_response: "ZXWBProV3"
     
   WandererCoverV4:
