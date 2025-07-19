@@ -39,7 +39,7 @@ class DeviceConfig:
 @dataclass
 class FirmwareConfig:
     """Configuration for firmware sync."""
-    source_url: str
+    source_url: Optional[str]
     github_repo: Optional[str]
     sync_interval_hours: int
     firmware_dir: str
@@ -105,7 +105,7 @@ class ConfigManager:
         # Parse firmware configuration
         firmware_data = self.config_data.get('firmware', {})
         self.firmware_config = FirmwareConfig(
-            source_url=firmware_data.get('source_url', ''),
+            source_url=firmware_data.get('source_url'),
             github_repo=firmware_data.get('github_repo'),
             sync_interval_hours=firmware_data.get('sync_interval_hours', 6),
             firmware_dir=firmware_data.get('firmware_dir', 'firmwares'),
@@ -183,10 +183,6 @@ class ConfigManager:
         """Validate configuration and return list of errors."""
         errors = []
         
-        # Validate firmware configuration
-        if not self.firmware_config.source_url:
-            errors.append("Firmware source URL is required")
-        
         # Validate devices
         if not self.devices:
             errors.append("At least one device must be configured")
@@ -209,7 +205,6 @@ class ConfigManager:
         """Get a summary of the current configuration."""
         return {
             'firmware': {
-                'source_url': self.firmware_config.source_url,
                 'github_repo': self.firmware_config.github_repo,
                 'sync_interval_hours': self.firmware_config.sync_interval_hours
             },

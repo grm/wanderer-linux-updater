@@ -33,7 +33,6 @@ Le fichier `config.yml` contient toute la configuration :
 ```yaml
 # Configuration des firmwares
 firmware:
-  source_url: "https://od.lk/d/MzNfMzIzNTQ2OTNf/FirmwareDownloadList.txt"
   github_repo: "your-username/wanderer-linux-updater"
   sync_interval_hours: 6
 
@@ -52,6 +51,8 @@ devices:
     handshake_command: "ZXWBPlusV3"
     handshake_response: "ZXWBPlusV3"
 ```
+
+**Note:** L'URL source du firmware est configurée exclusivement dans le workflow GitHub Action (`.github/workflows/sync-firmware.yml`), ce qui la rend flexible et spécifique à l'environnement.
 
 ## Utilisation
 
@@ -184,6 +185,18 @@ device_detection:
   handshake_timeout: 5        # Timeout pour les opérations de handshake (secondes)
   port_detection_timeout: 3   # Timeout pour la détection de ports (secondes)
 ```
+
+### Format du fichier de firmware
+
+Le fichier de liste des firmwares doit contenir une URL par ligne, pointant directement vers des fichiers `.hex` :
+
+```
+https://example.com/WandererBoxPlusV3-20250411.hex
+https://example.com/WandererBoxProV3-20250410.hex
+https://example.com/WandererCoverV3-20241104.hex
+```
+
+Le script extraira automatiquement le nom de fichier de l'URL et téléchargera les fichiers de firmware.
 
 ### Configuration de mise à jour
 

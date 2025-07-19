@@ -5,6 +5,12 @@ on:
     # Run every 6 hours
     - cron: '0 */6 * * *'
   workflow_dispatch:  # Allow manual trigger
+    inputs:
+      firmware_url:
+        description: 'Firmware source URL'
+        required: false
+        default: 'https://od.lk/d/MzNfMzIzNTQ2OTNf/FirmwareDownloadList.txt'
+        type: string
 
 jobs:
   sync-firmware:
@@ -29,7 +35,7 @@ jobs:
         
     - name: Sync firmware files
       run: |
-        pipenv run python -m scripts.sync_firmware
+        pipenv run python -m scripts.sync_firmware --firmware-url "${{ github.event.inputs.firmware_url || 'https://od.lk/d/MzNfMzIzNTQ2OTNf/FirmwareDownloadList.txt' }}"
         
     - name: Commit and push changes
       run: |

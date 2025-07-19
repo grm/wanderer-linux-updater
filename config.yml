@@ -3,11 +3,8 @@
 
 # Firmware sync configuration
 firmware:
-  # Source URL for firmware list
-  source_url: "https://od.lk/d/MzNfMzIzNTQ2OTNf/FirmwareDownloadList.txt"
-  
   # GitHub repository for hosting firmware files (optional)
-  github_repo: "grm/wanderer-linux-updater"
+  github_repo: "your-username/wanderer-linux-updater"
   
   # Sync interval in hours (for GitHub Actions)
   sync_interval_hours: 6
