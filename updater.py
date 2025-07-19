@@ -95,7 +95,7 @@ def run_update(device_config, port: str, firmware_path: str, config_manager: Con
                 rprint("[red] Aborting ..")
         else:
             os.system(command)
-            rprint("[green] Firmware update done. You can eject device.")
+            rprint("[green] Firmware update done.")
     else:
         rprint("[yellow]Dry run mode - command not executed[/yellow]")
 
