@@ -93,7 +93,7 @@ devices:
     baud_rate: 115200
     handshake_baud_rate: 19200
     # No handshake_command = device sends automatic response on connection
-    handshake_response: "XXX"
+    handshake_response: "WandererCoverV4"
     
   WandererDewTerminator:
     avr_device: "m168p"
