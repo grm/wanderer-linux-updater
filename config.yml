@@ -57,22 +57,6 @@ devices:
     handshake_command: "1500001"
     handshake_response: "XXX"
     
-  WandererBoxPlusV2:
-    avr_device: "m168p"
-    programmer: "arduino"
-    baud_rate: 115200
-    handshake_baud_rate: 19200
-    handshake_command: "XXX"
-    handshake_response: "XXX"
-    
-  WandererBoxUltimateV2:
-    avr_device: "m328p"
-    programmer: "arduino"
-    baud_rate: 57600
-    handshake_baud_rate: 19200
-    handshake_command: "XXX"
-    handshake_response: "XXX"
-    
   WandererCoverV3:
     avr_device: "m168p"
     programmer: "arduino"
