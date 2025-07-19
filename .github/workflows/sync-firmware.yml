@@ -2,8 +2,8 @@ name: Sync Firmware Files
 
 on:
   schedule:
-    # Run every 6 hours
-    - cron: '0 */6 * * *'
+    # Run every 24 hours
+    - cron: '0 0 * * *'
   workflow_dispatch:  # Allow manual trigger
     inputs:
       firmware_url:
