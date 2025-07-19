@@ -24,36 +24,6 @@ cd wanderer-linux-updater
 pipenv install
 ```
 
-3. Configurez votre fichier `config.yml` (voir section Configuration)
-
-## Configuration
-
-Le fichier `config.yml` contient toute la configuration :
-
-```yaml
-# Configuration des firmwares
-firmware:
-  github_repo: "your-username/wanderer-linux-updater"
-  sync_interval_hours: 6
-
-# Configuration de détection d'appareils (pour tests et debug)
-device_detection:
-  handshake_timeout: 5
-  port_detection_timeout: 3
-
-# Définitions des appareils
-devices:
-  WandererBoxPlusV3:
-    avr_device: "m168p"
-    programmer: "arduino"
-    baud_rate: 115200
-    handshake_baud_rate: 19200
-    handshake_command: "ZXWBPlusV3"
-    handshake_response: "ZXWBPlusV3"
-```
-
-**Note:** L'URL source du firmware est configurée exclusivement dans le workflow GitHub Action (`.github/workflows/sync-firmware.yml`), ce qui la rend flexible et spécifique à l'environnement.
-
 ## Utilisation
 
 ### Mise à jour interactive (recommandé)
