@@ -156,26 +156,6 @@ device_detection:
   port_detection_timeout: 3   # Timeout pour la détection de ports (secondes)
 ```
 
-### Format du fichier de firmware
-
-Le fichier de liste des firmwares doit contenir une URL par ligne, pointant directement vers des fichiers `.hex` :
-
-```
-https://example.com/WandererBoxPlusV3-20250411.hex
-https://example.com/WandererBoxProV3-20250410.hex
-https://example.com/WandererCoverV3-20241104.hex
-```
-
-Le script extraira automatiquement le nom de fichier de l'URL et téléchargera les fichiers de firmware.
-
-### Configuration de mise à jour
-
-```yaml
-update:
-  confirm_update: true        # Demander confirmation avant mise à jour
-  dry_run: false             # Mode dry-run
-```
-
 ## Dépannage
 
 ### Aucun port détecté

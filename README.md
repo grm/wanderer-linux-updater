@@ -26,36 +26,6 @@ cd wanderer-linux-updater
 pipenv install
 ```
 
-3. Configure your `config.yml` file (see Configuration section)
-
-## Configuration
-
-The `config.yml` file contains all configuration :
-
-```yaml
-# Firmware configuration
-firmware:
-  github_repo: "your-username/wanderer-linux-updater"
-  sync_interval_hours: 6
-
-# Device detection configuration (for testing and debugging)
-device_detection:
-  handshake_timeout: 5
-  port_detection_timeout: 3
-
-# Device definitions
-devices:
-  WandererBoxPlusV3:
-    avr_device: "m168p"
-    programmer: "arduino"
-    baud_rate: 115200
-    handshake_baud_rate: 19200
-    handshake_command: "ZXWBPlusV3"
-    handshake_response: "ZXWBPlusV3"
-```
-
-**Note:** The firmware source URL is configured exclusively in the GitHub Action workflow (`.github/workflows/sync-firmware.yml`), making it flexible and environment-specific.
-
 ## Usage
 
 ### Interactive update (recommended)
@@ -186,26 +156,6 @@ Each device can have specific handshake behavior:
 device_detection:
   handshake_timeout: 5        # Timeout for handshake operations (seconds)
   port_detection_timeout: 3   # Timeout for port detection (seconds)
-```
-
-### Firmware file format
-
-The firmware list file should contain one URL per line, pointing directly to `.hex` files:
-
-```
-https://example.com/WandererBoxPlusV3-20250411.hex
-https://example.com/WandererBoxProV3-20250410.hex
-https://example.com/WandererCoverV3-20241104.hex
-```
-
-The script will automatically extract the filename from the URL and download the firmware files.
-
-### Update configuration
-
-```yaml
-update:
-  confirm_update: true        # Ask for confirmation before update
-  dry_run: false             # Dry-run mode
 ```
 
 ## Troubleshooting
