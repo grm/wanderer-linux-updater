@@ -31,7 +31,8 @@ class DeviceConfig:
     avr_device: str
     programmer: str
     baud_rate: int
-    handshake_string: Optional[str] = None
+    handshake_command: Optional[str] = None
+    handshake_response: str
     handshake_baud_rate: Optional[int] = None
 
 
@@ -50,8 +51,6 @@ class DeviceDetectionConfig:
     """Configuration for device detection."""
     handshake_timeout: int
     port_detection_timeout: int
-    baud_rates: List[int]
-    handshake_commands: List[str]
 
 
 @dataclass
@@ -117,9 +116,7 @@ class ConfigManager:
         detection_data = self.config_data.get('device_detection', {})
         self.device_detection_config = DeviceDetectionConfig(
             handshake_timeout=detection_data.get('handshake_timeout', 5),
-            port_detection_timeout=detection_data.get('port_detection_timeout', 3),
-            baud_rates=detection_data.get('baud_rates', [115200, 57600, 9600]),
-            handshake_commands=detection_data.get('handshake_commands', ['VERSION', 'DEVICE', 'ID'])
+            port_detection_timeout=detection_data.get('port_detection_timeout', 3)
         )
         
         # Parse devices
@@ -130,7 +127,8 @@ class ConfigManager:
                 avr_device=device_data.get('avr_device', ''),
                 programmer=device_data.get('programmer', ''),
                 baud_rate=device_data.get('baud_rate', 115200),
-                handshake_string=device_data.get('handshake_string', ''),
+                handshake_command=device_data.get('handshake_command'),
+                handshake_response=device_data.get('handshake_response', ''),
                 handshake_baud_rate=device_data.get('handshake_baud_rate')
             )
         
@@ -163,31 +161,18 @@ class ConfigManager:
         return list(self.devices.keys())
     
     def find_device_by_handshake(self, handshake_response: str) -> Optional[DeviceConfig]:
-        """Find device by handshake response (model name before first 'A')."""
+        """Find device by handshake response."""
         if DEBUG_MODE:
             rprint(f"[yellow][DEBUG][ConfigManager] Finding device for handshake response: '{handshake_response}'")
         
-        # Extract model name before first 'A'
-        model_name = handshake_response.split('A', 1)[0].strip()
-        if DEBUG_MODE:
-            rprint(f"[yellow][DEBUG][ConfigManager] Extracted model name: '{model_name}'")
-        
-        if model_name in self.devices:
-            if DEBUG_MODE:
-                rprint(f"[yellow][DEBUG][ConfigManager] Found exact match: {model_name}")
-            return self.devices[model_name]
-        
-        # Fallback: try handshake_string
-        if DEBUG_MODE:
-            rprint(f"[yellow][DEBUG][ConfigManager] No exact match, trying handshake_string fallback")
-        
+        # Try to find device by exact handshake_response match
         for device_name, device_config in self.devices.items():
             if DEBUG_MODE:
-                rprint(f"[yellow][DEBUG][ConfigManager] Checking device {device_name} with handshake_string '{device_config.handshake_string}'")
+                rprint(f"[yellow][DEBUG][ConfigManager] Checking device {device_name} with handshake_response '{device_config.handshake_response}'")
             
-            if device_config.handshake_string.lower() in handshake_response.lower():
+            if device_config.handshake_response and device_config.handshake_response.lower() in handshake_response.lower():
                 if DEBUG_MODE:
-                    rprint(f"[yellow][DEBUG][ConfigManager] Found match with handshake_string: {device_name}")
+                    rprint(f"[yellow][DEBUG][ConfigManager] Found match with handshake_response: {device_name}")
                 return device_config
         
         if DEBUG_MODE:
@@ -211,7 +196,8 @@ class ConfigManager:
                 errors.append(f"Device {device_name}: avr_device is required")
             if not device_config.programmer:
                 errors.append(f"Device {device_name}: programmer is required")
-            # handshake_string is optional - some devices respond automatically
+            if not device_config.handshake_response:
+                errors.append(f"Device {device_name}: handshake_response is required")
         
         return errors
     

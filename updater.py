@@ -216,6 +216,160 @@ def select_firmware(device_name: str, firmware_index: Dict) -> Optional[Dict]:
     return available_firmware[choice]
 
 
+def _test_handshake_with_command(ser, device_config, port: str) -> bool:
+    """Test device connection by sending handshake command."""
+    if DEBUG_MODE:
+        rprint(f"[yellow][DEBUG] Sending handshake_command '{device_config.handshake_command}'")
+    
+    # Send the handshake command with newline
+    ser.write(f"{device_config.handshake_command}\n".encode('utf-8'))
+    ser.flush()
+    
+    # Wait for response and analyze all received data (up to 5 seconds)
+    import time
+    start_time = time.time()
+    all_received_data = ""
+    
+    while time.time() - start_time < 5.0:
+        if ser.in_waiting > 0:
+            new_data = ser.read(ser.in_waiting).decode('utf-8', errors='ignore')
+            all_received_data += new_data
+            if DEBUG_MODE:
+                rprint(f"[yellow][DEBUG] Received data: '{new_data.strip()}'")
+            
+            # Check if we have a complete response (contains newline)
+            if '\n' in all_received_data:
+                lines = all_received_data.split('\n')
+                for line in lines:
+                    line = line.strip()
+                    if line:
+                        if DEBUG_MODE:
+                            rprint(f"[yellow][DEBUG] Analyzing line: '{line}'")
+                        # Check if this line contains the expected handshake_response
+                        if device_config.handshake_response.lower() in line.lower():
+                            if DEBUG_MODE:
+                                rprint(f"[yellow][DEBUG] Found response line: '{line}'")
+                            rprint(f"[green]✓ Device {device_config.name} detected on {port}[/green]")
+                            return True
+        
+        time.sleep(0.1)  # Check every 100ms
+    
+    # Try without newline if no response with newline
+    if DEBUG_MODE:
+        rprint(f"[yellow][DEBUG] No response with newline, trying without newline")
+    
+    ser.reset_input_buffer()
+    ser.reset_output_buffer()
+    ser.write(f"{device_config.handshake_command}".encode('utf-8'))
+    ser.flush()
+    
+    start_time = time.time()
+    all_received_data = ""
+    
+    while time.time() - start_time < 5.0:
+        if ser.in_waiting > 0:
+            new_data = ser.read(ser.in_waiting).decode('utf-8', errors='ignore')
+            all_received_data += new_data
+            if DEBUG_MODE:
+                rprint(f"[yellow][DEBUG] Received data (no newline): '{new_data.strip()}'")
+            
+            # Check if we have any response
+            if all_received_data.strip() and len(all_received_data.strip()) > 0:
+                if DEBUG_MODE:
+                    rprint(f"[yellow][DEBUG] Found response: '{all_received_data.strip()}'")
+                # Check if response contains expected handshake_response
+                if device_config.handshake_response.lower() in all_received_data.lower():
+                    rprint(f"[green]✓ Device {device_config.name} detected on {port}[/green]")
+                    return True
+        
+        time.sleep(0.1)
+    
+    if DEBUG_MODE:
+        rprint(f"[yellow][DEBUG] No response to handshake_command after 5 seconds")
+    
+    return False
+
+
+def _test_automatic_response(ser, device_config, port: str) -> bool:
+    """Test device connection by waiting for automatic response."""
+    if DEBUG_MODE:
+        rprint(f"[yellow][DEBUG] Waiting for automatic response (up to 5 seconds)")
+    
+    import time
+    start_time = time.time()
+    all_received_data = ""
+    
+    while time.time() - start_time < 5.0:
+        if ser.in_waiting > 0:
+            new_data = ser.read(ser.in_waiting).decode('utf-8', errors='ignore')
+            all_received_data += new_data
+            if DEBUG_MODE:
+                rprint(f"[yellow][DEBUG] Received automatic data: '{new_data.strip()}'")
+            
+            # Filter out binary data and check for valid ASCII response
+            cleaned_data = ''.join(char for char in all_received_data if char.isprintable() or char in '\n\r\t')
+            if DEBUG_MODE:
+                rprint(f"[yellow][DEBUG] Cleaned data: '{repr(cleaned_data)}'")
+                rprint(f"[yellow][DEBUG] Cleaned data length: {len(cleaned_data)}")
+            
+            # Check if we have any response
+            if cleaned_data.strip() and len(cleaned_data.strip()) > 0:
+                if DEBUG_MODE:
+                    rprint(f"[yellow][DEBUG] Found valid ASCII response: '{cleaned_data.strip()}'")
+                    rprint(f"[yellow][DEBUG] Response length: {len(cleaned_data.strip())}")
+                
+                # Check if response contains expected handshake_response
+                if device_config.handshake_response.lower() in cleaned_data.lower():
+                    if DEBUG_MODE:
+                        rprint(f"[yellow][DEBUG] Expected handshake_response found in response!")
+                    rprint(f"[green]✓ Device {device_config.name} detected on {port}[/green]")
+                    return True
+                else:
+                    if DEBUG_MODE:
+                        rprint(f"[yellow][DEBUG] Expected handshake_response '{device_config.handshake_response}' not found in response, continuing...")
+            elif DEBUG_MODE:
+                rprint(f"[yellow][DEBUG] No valid ASCII response yet, continuing to wait...")
+        
+        time.sleep(0.1)  # Check every 100ms
+    
+    if DEBUG_MODE:
+        rprint(f"[yellow][DEBUG] No automatic response received after 5 seconds")
+        rprint(f"[yellow][DEBUG] RETURNING FALSE HERE")
+    
+    return False
+
+
+def _setup_serial_connection(port: str, detection_baud_rate: int):
+    """Setup serial connection with proper error handling."""
+    import serial
+    try:
+        ser = serial.Serial(port, detection_baud_rate, timeout=5)
+        if DEBUG_MODE:
+            rprint(f"[yellow][DEBUG] Serial port opened successfully")
+        
+        # Clear any existing data
+        ser.reset_input_buffer()
+        ser.reset_output_buffer()
+        
+        return ser
+    except Exception as e:
+        if DEBUG_MODE:
+            rprint(f"[yellow][DEBUG] Exception opening port {port}: {e}")
+        raise e
+
+
+def _log_device_test_info(device_config, port: str, detection_baud_rate: int):
+    """Log device testing information for debugging."""
+    if DEBUG_MODE:
+        rprint(f"[yellow][DEBUG] Testing device {device_config.name} on {port} at {detection_baud_rate} baud")
+        if device_config.handshake_baud_rate:
+            rprint(f"[yellow][DEBUG] Using handshake_baud_rate: {detection_baud_rate} (avrdude will use: {device_config.baud_rate})")
+        if device_config.handshake_command:
+            rprint(f"[yellow][DEBUG] Device has handshake_command: '{device_config.handshake_command}'")
+        else:
+            rprint(f"[yellow][DEBUG] Device has no handshake_command - waiting for automatic response")
+
+
 def test_device_connection(port: str, device_config) -> bool:
     """Test if device is connected and responding on the selected port."""
     rprint(f"[blue]Testing connection to {device_config.name} on {port}...[/blue]")
@@ -223,157 +377,33 @@ def test_device_connection(port: str, device_config) -> bool:
     # Use handshake_baud_rate if available, otherwise use baud_rate
     detection_baud_rate = device_config.handshake_baud_rate if device_config.handshake_baud_rate else device_config.baud_rate
     
-    if DEBUG_MODE:
-        rprint(f"[yellow][DEBUG] Testing device {device_config.name} on {port} at {detection_baud_rate} baud")
-        if device_config.handshake_baud_rate:
-            rprint(f"[yellow][DEBUG] Using handshake_baud_rate: {detection_baud_rate} (avrdude will use: {device_config.baud_rate})")
-        if device_config.handshake_string:
-            rprint(f"[yellow][DEBUG] Device has handshake_string: '{device_config.handshake_string}'")
-        else:
-            rprint(f"[yellow][DEBUG] Device has no handshake_string - waiting for automatic response")
+    _log_device_test_info(device_config, port, detection_baud_rate)
     
     try:
-        import serial
-        with serial.Serial(port, detection_baud_rate, timeout=5) as ser:
-            if DEBUG_MODE:
-                rprint(f"[yellow][DEBUG] Serial port opened successfully")
-            
-            # Clear any existing data
-            ser.reset_input_buffer()
-            ser.reset_output_buffer()
-            
-            if device_config.handshake_string:
-                # Case 1: Device has handshake_string - send it and wait for response
-                if DEBUG_MODE:
-                    rprint(f"[yellow][DEBUG] Sending handshake_string '{device_config.handshake_string}'")
-                
-                # Send the handshake string
-                ser.write(f"{device_config.handshake_string}\n".encode('utf-8'))
-                ser.flush()
-                
-                # Wait for response and analyze all received data (up to 5 seconds)
-                import time
-                start_time = time.time()
-                all_received_data = ""
-                
-                while time.time() - start_time < 5.0:
-                    if ser.in_waiting > 0:
-                        new_data = ser.read(ser.in_waiting).decode('utf-8', errors='ignore')
-                        all_received_data += new_data
-                        if DEBUG_MODE:
-                            rprint(f"[yellow][DEBUG] Received data: '{new_data.strip()}'")
-                        
-                        # Check if we have a complete response (contains newline)
-                        if '\n' in all_received_data:
-                            lines = all_received_data.split('\n')
-                            for line in lines:
-                                line = line.strip()
-                                if line:
-                                    if DEBUG_MODE:
-                                        rprint(f"[yellow][DEBUG] Analyzing line: '{line}'")
-                                    # Check if this line indicates a response
-                                    if line.startswith(device_config.handshake_string):
-                                        if DEBUG_MODE:
-                                            rprint(f"[yellow][DEBUG] Found response line: '{line}'")
-                                        rprint(f"[green]✓ Device {device_config.name} detected on {port}[/green]")
-                                        return True
-                    
-                    time.sleep(0.1)  # Check every 100ms
-                
-                # Try without newline if no response with newline
-                if DEBUG_MODE:
-                    rprint(f"[yellow][DEBUG] No response with newline, trying without newline")
-                
-                ser.reset_input_buffer()
-                ser.reset_output_buffer()
-                ser.write(f"{device_config.handshake_string}".encode('utf-8'))
-                ser.flush()
-                
-                start_time = time.time()
-                all_received_data = ""
-                
-                while time.time() - start_time < 5.0:
-                    if ser.in_waiting > 0:
-                        new_data = ser.read(ser.in_waiting).decode('utf-8', errors='ignore')
-                        all_received_data += new_data
-                        if DEBUG_MODE:
-                            rprint(f"[yellow][DEBUG] Received data (no newline): '{new_data.strip()}'")
-                        
-                        # Check if we have any response
-                        if all_received_data.strip() and len(all_received_data.strip()) > 0:
-                            if DEBUG_MODE:
-                                rprint(f"[yellow][DEBUG] Found response: '{all_received_data.strip()}'")
-                            rprint(f"[green]✓ Device {device_config.name} detected on {port}[/green]")
-                            return True
-                    
-                    time.sleep(0.1)
-                
-                if DEBUG_MODE:
-                    rprint(f"[yellow][DEBUG] No response to handshake_string after 5 seconds")
-                
+        ser = _setup_serial_connection(port, detection_baud_rate)
+        
+        try:
+            if device_config.handshake_command:
+                # Case 1: Device has handshake_command - send it and wait for response
+                return _test_handshake_with_command(ser, device_config, port)
             else:
-                # Case 2: Device has no handshake_string - wait for automatic response
-                if DEBUG_MODE:
-                    rprint(f"[yellow][DEBUG] Waiting for automatic response (up to 5 seconds)")
-                
-                import time
-                start_time = time.time()
-                all_received_data = ""
-                
-                while time.time() - start_time < 5.0:
-                    if ser.in_waiting > 0:
-                        new_data = ser.read(ser.in_waiting).decode('utf-8', errors='ignore')
-                        all_received_data += new_data
-                        if DEBUG_MODE:
-                            rprint(f"[yellow][DEBUG] Received automatic data: '{new_data.strip()}'")
-                        
-                        # Filter out binary data and check for valid ASCII response
-                        cleaned_data = ''.join(char for char in all_received_data if char.isprintable() or char in '\n\r\t')
-                        if DEBUG_MODE:
-                            rprint(f"[yellow][DEBUG] Cleaned data: '{repr(cleaned_data)}'")
-                            rprint(f"[yellow][DEBUG] Cleaned data length: {len(cleaned_data)}")
-                        
-                        # Check if we have any response
-                        if cleaned_data.strip() and len(cleaned_data.strip()) > 0:
-                            if DEBUG_MODE:
-                                rprint(f"[yellow][DEBUG] Found valid ASCII response: '{cleaned_data.strip()}'")
-                                rprint(f"[yellow][DEBUG] Response length: {len(cleaned_data.strip())}")
-                            
-                            # Always check if response contains device identifier
-                            device_name_lower = device_config.name.lower()
-                            cleaned_lower = cleaned_data.lower()
-                            
-                            if DEBUG_MODE:
-                                rprint(f"[yellow][DEBUG] Checking if '{device_name_lower}' is in response")
-                            
-                            if device_name_lower in cleaned_lower or "wanderer" in cleaned_lower:
-                                if DEBUG_MODE:
-                                    rprint(f"[yellow][DEBUG] Device pattern found in response!")
-                                    rprint(f"[yellow][DEBUG] RETURNING TRUE HERE")
-                                rprint(f"[green]✓ Device {device_config.name} detected on {port}[/green]")
-                                return True
-                            else:
-                                if DEBUG_MODE:
-                                    rprint(f"[yellow][DEBUG] No device pattern found in response, continuing...")
-                        elif DEBUG_MODE:
-                            rprint(f"[yellow][DEBUG] No valid ASCII response yet, continuing to wait...")
-                    
-                    time.sleep(0.1)  # Check every 100ms
-                
-                if DEBUG_MODE:
-                    rprint(f"[yellow][DEBUG] No automatic response received after 5 seconds")
-                    rprint(f"[yellow][DEBUG] RETURNING FALSE HERE")
-            
-            rprint(f"[yellow]⚠ No {device_config.name} detected on {port}[/yellow]")
-            rprint("[blue]You can still proceed with the update if you're sure the device is connected.[/blue]")
-            return False
+                # Case 2: Device has no handshake_command - wait for automatic response
+                return _test_automatic_response(ser, device_config, port)
+        
+        finally:
+            ser.close()
             
     except Exception as e:
         if DEBUG_MODE:
-            rprint(f"[yellow][DEBUG] Exception opening port {port}: {e}")
+            rprint(f"[yellow][DEBUG] Exception during device testing: {e}")
         rprint(f"[red]Error testing connection to {device_config.name} on {port}: {e}[/red]")
         rprint("[blue]You can still proceed with the update if you're sure the device is connected.[/blue]")
         return False
+    
+    # If we get here, no device was detected
+    rprint(f"[yellow]⚠ No {device_config.name} detected on {port}[/yellow]")
+    rprint("[blue]You can still proceed with the update if you're sure the device is connected.[/blue]")
+    return False
 
 
 def main(firmware_url=None, firmware_file=None, github_repo=None, config_file="config.yml"):

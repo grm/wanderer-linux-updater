@@ -1,144 +1,147 @@
 # Wanderer Linux Updater
 
-Un outil de mise à jour de firmware pour les appareils Wanderer Astro, avec sélection manuelle d'appareils et synchronisation de firmware via GitHub.
+A firmware update tool for Wanderer Astro devices, with manual device selection and firmware synchronization via GitHub.
 
-## Fonctionnalités
+**[Lire en français](README.fr.md)**
 
-- **Configuration YAML** : Configuration centralisée et flexible
-- **Sélection manuelle d'appareils** : Interface utilisateur pour choisir le type d'appareil
-- **Détection de ports USB** : Détection automatique des ports série disponibles
-- **Synchronisation automatique** : GitHub Actions pour synchroniser les firmwares
-- **Hébergement GitHub Pages** : Firmwares hébergés de manière fiable
-- **Support multi-appareils** : Tous les appareils Wanderer supportés
+## Features
+
+- **YAML Configuration** : Centralized and flexible configuration
+- **Manual device selection** : User interface to choose device type
+- **USB port detection** : Automatic detection of available serial ports
+- **Automatic synchronization** : GitHub Actions to sync firmwares
+- **GitHub Pages hosting** : Firmwares hosted reliably
+- **Multi-device support** : All Wanderer devices supported
 
 ## Installation
 
-1. Clonez le repository :
+1. Clone the repository :
 ```bash
 git clone https://github.com/your-username/wanderer-linux-updater.git
 cd wanderer-linux-updater
 ```
 
-2. Installez les dépendances :
+2. Install dependencies using pipenv :
 ```bash
 pipenv install
 ```
 
-3. Configurez votre fichier `config.yml` (voir section Configuration)
+3. Configure your `config.yml` file (see Configuration section)
 
 ## Configuration
 
-Le fichier `config.yml` contient toute la configuration :
+The `config.yml` file contains all configuration :
 
 ```yaml
-# Configuration des firmwares
+# Firmware configuration
 firmware:
   source_url: "https://od.lk/d/MzNfMzIzNTQ2OTNf/FirmwareDownloadList.txt"
   github_repo: "your-username/wanderer-linux-updater"
   sync_interval_hours: 6
 
-# Configuration de détection de ports (pour tests)
+# Device detection configuration (for testing and debugging)
 device_detection:
   handshake_timeout: 5
-  baud_rates: [115200, 57600, 9600]
-  handshake_commands: ["VERSION", "DEVICE", "ID"]
+  port_detection_timeout: 3
 
-# Définitions des appareils
+# Device definitions
 devices:
   WandererBoxPlusV3:
     avr_device: "m168p"
     programmer: "arduino"
     baud_rate: 115200
-    handshake_string: "WandererBoxPlusV3"
+    handshake_baud_rate: 19200
+    handshake_command: "ZXWBPlusV3"
+    handshake_response: "ZXWBPlusV3"
 ```
 
-## Utilisation
+## Usage
 
-### Mise à jour interactive (recommandé)
+### Interactive update (recommended)
 
 ```bash
-# Lancer l'outil de mise à jour interactif
-python updater.py
+# Launch the interactive update tool
+pipenv run python updater.py
 ```
 
-L'outil vous guidera à travers les étapes suivantes :
-1. **Sélection du type d'appareil** : Choisissez parmi les appareils configurés
-2. **Sélection du port série** : Choisissez parmi les ports USB disponibles
-3. **Test de connexion** : Vérification optionnelle de la présence de l'appareil
-4. **Sélection du firmware** : Choisissez la version de firmware à installer
-5. **Mise à jour** : Exécution de la mise à jour
+The tool will guide you through the following steps :
+1. **Device type selection** : Choose from configured devices
+2. **Serial port selection** : Choose from available USB ports
+3. **Connection test** : Optional verification of device presence
+4. **Firmware selection** : Choose the firmware version to install
+5. **Update** : Execute the update
 
-### Options supplémentaires
+### Additional options
 
 ```bash
-# Utiliser un fichier de configuration personnalisé
-python updater.py --config my-config.yml
+# Use a custom configuration file
+pipenv run python updater.py --config my-config.yml
 
-# Mode dry-run (affiche la commande sans l'exécuter)
-python updater.py --dry-run
+# Dry-run mode (shows the command without executing it)
+pipenv run python updater.py --dry-run
 
-# Mode debug
-python updater.py --debug
+# Debug mode
+pipenv run python updater.py --debug
 ```
 
-## Scripts utilitaires
+## Utility scripts
 
-### Lister les appareils configurés
+### List configured devices
 
 ```bash
-# Afficher tous les appareils configurés avec leurs paramètres
-python list_devices.py
+# Display all configured devices with their parameters
+pipenv run python list_devices.py
 ```
 
-### Tester la détection de ports USB
+### Test USB port detection
 
 ```bash
-# Tester la détection des ports série disponibles
-python test_ports.py
+# Test detection of available serial ports
+pipenv run python test_ports.py
 ```
 
-### Tester la détection automatique (optionnel)
+### Test automatic detection (optional)
 
 ```bash
-# Tester la détection automatique d'appareils via handshake
-python test_detection.py
+# Test automatic device detection via handshake
+pipenv run python test_detection.py
 ```
 
-## Synchronisation automatique
+## Automatic synchronization
 
-Le workflow GitHub Actions synchronise automatiquement les firmwares :
+The GitHub Actions workflow automatically synchronizes firmwares :
 
-1. **Activation** : Le workflow s'exécute toutes les 6 heures
-2. **Téléchargement** : Récupère la liste des firmwares depuis l'URL configurée
-3. **Hébergement** : Les firmwares sont hébergés sur GitHub Pages
-4. **Index** : Un fichier JSON index est généré avec les métadonnées
+1. **Activation** : The workflow runs every 6 hours
+2. **Download** : Retrieves firmware list from configured URL
+3. **Hosting** : Firmwares are hosted on GitHub Pages
+4. **Index** : A JSON index file is generated with metadata
 
-### Configuration GitHub Pages
+### GitHub Pages configuration
 
-1. Allez dans Settings > Pages
+1. Go to Settings > Pages
 2. Source : "Deploy from a branch"
-3. Branch : `main` (ou votre branche principale)
+3. Branch : `main` (or your main branch)
 4. Folder : `/ (root)`
 
-## Structure des fichiers
+## File structure
 
 ```
 wanderer-linux-updater/
-├── .github/workflows/sync-firmware.yml  # Workflow GitHub Actions
-├── scripts/sync_firmware.py             # Script de synchronisation
-├── config.yml                           # Configuration principale
-├── config_manager.py                    # Gestionnaire de configuration
-├── device_detector.py                   # Détection d'appareils (pour tests)
-├── updater.py                          # Script principal interactif
-├── test_detection.py                   # Test de détection automatique
-├── test_ports.py                       # Test de détection de ports
-├── list_devices.py                     # Liste des appareils configurés
-├── firmware/                           # Firmwares (auto-généré)
-├── firmware_index.json                 # Index des firmwares (auto-généré)
+├── .github/workflows/sync-firmware.yml  # GitHub Actions workflow
+├── scripts/sync_firmware.py             # Synchronization script
+├── config.yml                           # Main configuration
+├── config_manager.py                    # Configuration manager
+├── device_detector.py                   # Device detection (for testing)
+├── updater.py                          # Main interactive script
+├── test_detection.py                   # Automatic detection test
+├── test_ports.py                       # Port detection test
+├── list_devices.py                     # Configured devices list
+├── firmware/                           # Firmwares (auto-generated)
+├── firmware_index.json                 # Firmware index (auto-generated)
 └── README.md
 ```
 
-## Appareils supportés
+## Supported devices
 
 - WandererBoxPlusV3 
 - WandererBoxProV3 (Tested ✔️)
@@ -151,66 +154,107 @@ wanderer-linux-updater/
 - WandererRotatorProV1/V2
 - WandererETA54
 
-## Configuration avancée
+## Advanced configuration
 
-### Ajouter un nouvel appareil
+### Adding a new device
 
-Ajoutez une nouvelle entrée dans la section `devices` de `config.yml` :
+Add a new entry in the `devices` section of `config.yml` :
 
 ```yaml
 devices:
-  MonNouvelAppareil:
+  MyNewDevice:
     avr_device: "m328p"
     programmer: "arduino"
     baud_rate: 115200
-    handshake_string: "MonNouvelAppareil"
+    handshake_baud_rate: 19200
+    handshake_command: "MyCommand"      # Optional: command to send
+    handshake_response: "MyResponse"    # Required: expected response
 ```
 
-### Configuration de mise à jour
+### Handshake configuration
+
+Each device can have specific handshake behavior:
+
+- **`handshake_command`** : Optional command to send to the device
+- **`handshake_response`** : Required expected response from the device
+- **`handshake_baud_rate`** : Optional baud rate for handshake (defaults to `baud_rate`)
+
+### Device detection configuration
+
+```yaml
+device_detection:
+  handshake_timeout: 5        # Timeout for handshake operations (seconds)
+  port_detection_timeout: 3   # Timeout for port detection (seconds)
+```
+
+### Update configuration
 
 ```yaml
 update:
-  confirm_update: true        # Demander confirmation avant mise à jour
-  dry_run: false             # Mode dry-run
+  confirm_update: true        # Ask for confirmation before update
+  dry_run: false             # Dry-run mode
 ```
 
-## Dépannage
+## Troubleshooting
 
-### Aucun port détecté
+### No ports detected
 
-1. Vérifiez que l'appareil est connecté via USB
-2. Testez avec `python test_ports.py`
-3. Vérifiez les permissions sur `/dev/tty*` (Linux)
-4. Installez les drivers USB appropriés
+1. Verify that the device is connected via USB
+2. Test with `pipenv run python test_ports.py`
+3. Check permissions on `/dev/tty*` (Linux)
+4. Install appropriate USB drivers
 
-### Erreurs de configuration
+### Configuration errors
 
 ```bash
-# Valider la configuration
-python -c "from config_manager import ConfigManager; ConfigManager().validate_config()"
+# Validate configuration
+pipenv run python -c "from config_manager import ConfigManager; ConfigManager().validate_config()"
 ```
 
-### Problèmes de mise à jour
+### Update issues
 
-1. Vérifiez que l'appareil est en mode bootloader
-2. Assurez-vous que `avrdude` est installé
-3. Vérifiez les permissions sur le port série
-4. Testez avec le mode `--dry-run` d'abord
+1. Verify that the device is in bootloader mode
+2. Ensure `avrdude` is installed
+3. Check serial port permissions
+4. Test with `--dry-run` mode first
 
-### Erreurs de téléchargement de firmware
+### Firmware download errors
 
-1. Vérifiez la connectivité internet
-2. Vérifiez l'URL du firmware dans la configuration
-3. Vérifiez que le repository GitHub est correctement configuré
+1. Check internet connectivity
+2. Verify firmware URL in configuration
+3. Verify that GitHub repository is correctly configured
 
-## Contribution
+## Development
 
-1. Fork le repository
-2. Créez une branche pour votre fonctionnalité
-3. Committez vos changements
-4. Poussez vers la branche
-5. Créez une Pull Request
+### Using pipenv
 
-## Licence
+This project uses [pipenv](https://pipenv.pypa.io/) for dependency management. Here are the key commands:
 
-Ce projet est sous licence MIT. Voir le fichier LICENSE pour plus de détails.
+```bash
+# Install dependencies
+pipenv install
+
+# Run a script in the virtual environment
+pipenv run python script.py
+
+# Activate the virtual environment
+pipenv shell
+
+# Add a new dependency
+pipenv install package_name
+
+# Add a development dependency
+pipenv install --dev package_name
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create a branch for your feature
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
+
+## License
+
+This project is licensed under the MIT License. See the LICENSE file for details.

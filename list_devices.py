@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-List all configured devices and their parameters.
+List Wanderer device configurations.
+Shows all configured devices with their parameters.
 """
 
 import sys
@@ -11,10 +12,16 @@ sys.path.append(str(Path(__file__).parent))
 
 from config_manager import ConfigManager
 from rich import print as rprint
-from rich.panel import Panel
 from rich.table import Table
+from rich.panel import Panel
 
 DEBUG_MODE = False
+
+
+def set_debug_mode(enabled: bool):
+    """Set debug mode for this module."""
+    global DEBUG_MODE
+    DEBUG_MODE = enabled
 
 
 def main():
@@ -39,6 +46,8 @@ def main():
         
         # Get all devices
         devices = config_manager.get_all_devices()
+        if DEBUG_MODE:
+            rprint(f"[yellow][DEBUG][list_devices] Found {len(devices)} devices[/yellow]")
         
         if not devices:
             rprint("[yellow]No devices configured[/yellow]")
@@ -46,20 +55,28 @@ def main():
         
         # Create table
         table = Table(title="Configured Devices")
-        table.add_column("Device Name", style="cyan", no_wrap=True)
+        table.add_column("Device Name", style="cyan")
         table.add_column("AVR Device", style="magenta")
         table.add_column("Programmer", style="green")
         table.add_column("Baud Rate", style="yellow")
-        table.add_column("Handshake String", style="blue")
+        table.add_column("Handshake Command", style="blue")
+        table.add_column("Handshake Response", style="red")
+        table.add_column("Handshake Baud", style="orange")
         
         # Add rows
         for device in devices:
+            handshake_cmd = device.handshake_command if device.handshake_command else "None"
+            handshake_resp = device.handshake_response if device.handshake_response else "None"
+            handshake_baud = str(device.handshake_baud_rate) if device.handshake_baud_rate else "Same as baud"
+            
             table.add_row(
                 device.name,
                 device.avr_device,
                 device.programmer,
                 str(device.baud_rate),
-                device.handshake_string
+                handshake_cmd,
+                handshake_resp,
+                handshake_baud
             )
         
         rprint(table)
