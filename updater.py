@@ -339,6 +339,47 @@ def _test_automatic_response(ser, device_config, port: str) -> bool:
     return False
 
 
+def _detect_actual_device(ser, device_config, port: str) -> Optional[str]:
+    """Try to detect what device is actually connected on the port."""
+    if DEBUG_MODE:
+        rprint(f"[yellow][DEBUG] Attempting to detect actual device on {port}")
+    
+    # Try to get any response from the device
+    import time
+    start_time = time.time()
+    all_received_data = ""
+    
+    while time.time() - start_time < 3.0:  # Shorter timeout for detection
+        if ser.in_waiting > 0:
+            new_data = ser.read(ser.in_waiting).decode('utf-8', errors='ignore')
+            all_received_data += new_data
+            if DEBUG_MODE:
+                rprint(f"[yellow][DEBUG] Detection data: '{new_data.strip()}'")
+        
+        time.sleep(0.1)
+    
+    if all_received_data.strip():
+        # Try to identify device from response
+        from config_manager import ConfigManager
+        config_manager = ConfigManager()
+        
+        # Check if response contains any known device identifiers
+        for device_name, device_config_check in config_manager.devices.items():
+            if device_config_check.handshake_response and device_config_check.handshake_response.lower() in all_received_data.lower():
+                if DEBUG_MODE:
+                    rprint(f"[yellow][DEBUG] Detected device: {device_name}")
+                return device_name
+        
+        # If no exact match, look for device name patterns
+        for device_name in config_manager.devices.keys():
+            if device_name.lower() in all_received_data.lower():
+                if DEBUG_MODE:
+                    rprint(f"[yellow][DEBUG] Detected device by name pattern: {device_name}")
+                return device_name
+    
+    return None
+
+
 def _setup_serial_connection(port: str, detection_baud_rate: int):
     """Setup serial connection with proper error handling."""
     import serial
@@ -383,6 +424,24 @@ def test_device_connection(port: str, device_config) -> bool:
         ser = _setup_serial_connection(port, detection_baud_rate)
         
         try:
+            # First, try to detect what device is actually connected
+            actual_device = _detect_actual_device(ser, device_config, port)
+            
+            if actual_device and actual_device != device_config.name:
+                rprint(f"[red]⚠️  WARNING: Device mismatch detected![/red]")
+                rprint(f"[red]  Selected device: {device_config.name}[/red]")
+                rprint(f"[red]  Actual device connected: {actual_device}[/red]")
+                rprint(f"[yellow]  This could cause the update to fail or damage the wrong device![/yellow]")
+                
+                # Ask user for confirmation
+                from rich.prompt import Confirm
+                if not Confirm.ask("Do you want to continue anyway?", default=False):
+                    rprint("[blue]Update cancelled by user.[/blue]")
+                    return False
+                else:
+                    rprint("[yellow]Proceeding with update (user confirmed)...[/yellow]")
+            
+            # Now proceed with the normal connection test
             if device_config.handshake_command:
                 # Case 1: Device has handshake_command - send it and wait for response
                 return _test_handshake_with_command(ser, device_config, port)
@@ -464,10 +523,28 @@ def main(firmware_url=None, firmware_file=None, github_repo=None, config_file="c
     rprint(f"[green]Selected port: {port}[/green]")
     
     # Step 3: Test device connection (optional)
-    test_device_connection(port, device_config)
+    rprint("[blue]Step 3: Test device connection[/blue]")
+    connection_test_result = test_device_connection(port, device_config)
+    
+    if not connection_test_result:
+        rprint("[yellow]⚠️  Device connection test failed or device mismatch detected![/yellow]")
+        rprint("[yellow]  This could mean:[/yellow]")
+        rprint("[yellow]    - The wrong device is connected[/yellow]")
+        rprint("[yellow]    - The device is not in bootloader mode[/yellow]")
+        rprint("[yellow]    - The device is not responding[/yellow]")
+        rprint("[yellow]    - The wrong port was selected[/yellow]")
+        
+        from rich.prompt import Confirm
+        if not Confirm.ask("Do you want to continue with the update anyway?", default=False):
+            rprint("[blue]Update cancelled by user.[/blue]")
+            return
+        else:
+            rprint("[yellow]Proceeding with update (user confirmed)...[/yellow]")
+    else:
+        rprint("[green]✓ Device connection test successful![/green]")
     
     # Step 4: Select firmware
-    rprint("[blue]Step 3: Select firmware[/blue]")
+    rprint("[blue]Step 4: Select firmware[/blue]")
     selected_firmware = select_firmware(device_name, firmware_index)
     if not selected_firmware:
         return
@@ -475,7 +552,7 @@ def main(firmware_url=None, firmware_file=None, github_repo=None, config_file="c
     rprint(f"[green]Selected firmware: {selected_firmware.get('filename', 'Unknown')}[/green]")
     
     # Step 5: Download and update
-    rprint("[blue]Step 4: Download and update firmware[/blue]")
+    rprint("[blue]Step 5: Download and update firmware[/blue]")
     with tempfile.TemporaryDirectory() as temp_dir:
         firmware_path = download_firmware_file(selected_firmware['url'], temp_dir)
         if not firmware_path:
