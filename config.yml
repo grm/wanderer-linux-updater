@@ -39,7 +39,7 @@ devices:
     baud_rate: 115200
     handshake_baud_rate: 19200
     handshake_command: "1500001"
-    handshake_response: "1500001"
+    handshake_response: "WandererRotatorLite"
     
   WandererRotatorLiteV2:
     avr_device: "m328p"
@@ -47,7 +47,7 @@ devices:
     baud_rate: 57600
     handshake_baud_rate: 19200
     handshake_command: "1500001"
-    handshake_response: "1500001"
+    handshake_response: "WandererRotatorLiteV2"
     
   WandererRotatorProV1:
     avr_device: "m328p"
@@ -55,7 +55,7 @@ devices:
     baud_rate: 57600
     handshake_baud_rate: 19200
     handshake_command: "1500001"
-    handshake_response: "1500001"
+    handshake_response: "XXX"
     
   WandererBoxPlusV2:
     avr_device: "m168p"
@@ -79,7 +79,7 @@ devices:
     baud_rate: 115200
     handshake_baud_rate: 19200
     handshake_command: "1500001"
-    handshake_response: "1500001"
+    handshake_response: "WandererCoverV3"
     
   WandererBoxPlusV3:
     avr_device: "m168p"
@@ -109,7 +109,7 @@ devices:
     baud_rate: 115200
     handshake_baud_rate: 19200
     # No handshake_command = device sends automatic response on connection
-    handshake_response: "WandererCoverV4Pro"
+    handshake_response: "XXX"
     
   WandererDewTerminator:
     avr_device: "m168p"
@@ -124,16 +124,16 @@ devices:
     programmer: "arduino"
     baud_rate: 115200
     handshake_baud_rate: 19200
-    handshake_command: "XXX"
-    handshake_response: "XXX"
+    handshake_command: "1500001"
+    handshake_response: "WandererEclipse"
     
   WandererRotatorProV2:
     avr_device: "m168p"
     programmer: "arduino"
     baud_rate: 115200
     handshake_baud_rate: 19200
-    handshake_command: "1500001"
-    handshake_response: "1500001"
+    handshake_command: "XXX"
+    handshake_response: "XXX"
     
   WandererETA54:
     avr_device: "m168p"
