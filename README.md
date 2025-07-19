@@ -140,13 +140,14 @@ wanderer-linux-updater/
 
 ## Appareils supportés
 
-- WandererBoxPlusV3
-- WandererBoxProV3
-- WandererCoverV3/V4/V4Pro
+- WandererBoxPlusV3 
+- WandererBoxProV3 (Tested ✔️)
+- WandererCoverV3
+- WandererCover V4/V4Pro (Tested ✔️)
 - WandererDewTerminator
 - WandererEclipse
 - WandererRotatorLiteV1/V2
-- WandererRotatorMini
+- WandererRotatorMini (Tested ✔️)
 - WandererRotatorProV1/V2
 - WandererETA54
 
