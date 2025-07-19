@@ -1,7 +1,20 @@
 {
-  "base_url": "https://grm.github.io/wanderer-linux-updater/firmwares/",
+  "base_url": "https://your-username.github.io/wanderer-linux-updater/firmwares/",
   "devices": {
     "WandererBoxPlusV3": [
+      {
+        "device_config": {
+          "avr_device": "m168p",
+          "baud_rate": 115200,
+          "programmer": "arduino"
+        },
+        "filename": "WandererBoxPlusV3-20250411.hex",
+        "original_url": null,
+        "size": 32454,
+        "url": "https://your-username.github.io/wanderer-linux-updater/firmwares/WandererBoxPlusV3-20250411.hex",
+        "version": "2025-04-11",
+        "version_date": "20250411"
+      },
       {
         "device_config": {
           "avr_device": "m168p",
@@ -11,7 +24,7 @@
         "filename": "WandererBoxPlusV3-20240216.hex",
         "original_url": null,
         "size": 32536,
-        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererBoxPlusV3-20240216.hex",
+        "url": "https://your-username.github.io/wanderer-linux-updater/firmwares/WandererBoxPlusV3-20240216.hex",
         "version": "2024-02-16",
         "version_date": "20240216"
       }
@@ -23,10 +36,23 @@
           "baud_rate": 115200,
           "programmer": "arduino"
         },
+        "filename": "WandererBoxProV3-20250410.hex",
+        "original_url": null,
+        "size": 40976,
+        "url": "https://your-username.github.io/wanderer-linux-updater/firmwares/WandererBoxProV3-20250410.hex",
+        "version": "2025-04-10",
+        "version_date": "20250410"
+      },
+      {
+        "device_config": {
+          "avr_device": "m168p",
+          "baud_rate": 115200,
+          "programmer": "arduino"
+        },
         "filename": "WandererBoxProV3-20240216.hex",
         "original_url": null,
         "size": 41000,
-        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererBoxProV3-20240216.hex",
+        "url": "https://your-username.github.io/wanderer-linux-updater/firmwares/WandererBoxProV3-20240216.hex",
         "version": "2024-02-16",
         "version_date": "20240216"
       }
@@ -41,7 +67,7 @@
         "filename": "WandererCoverV3-20241104.hex",
         "original_url": null,
         "size": 22714,
-        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererCoverV3-20241104.hex",
+        "url": "https://your-username.github.io/wanderer-linux-updater/firmwares/WandererCoverV3-20241104.hex",
         "version": "2024-11-04",
         "version_date": "20241104"
       }
@@ -53,10 +79,23 @@
           "baud_rate": 115200,
           "programmer": "arduino"
         },
+        "filename": "WandererCoverV4-20250703.hex",
+        "original_url": null,
+        "size": 43238,
+        "url": "https://your-username.github.io/wanderer-linux-updater/firmwares/WandererCoverV4-20250703.hex",
+        "version": "2025-07-03",
+        "version_date": "20250703"
+      },
+      {
+        "device_config": {
+          "avr_device": "m168p",
+          "baud_rate": 115200,
+          "programmer": "arduino"
+        },
         "filename": "WandererCoverV4-20250211.hex",
         "original_url": null,
         "size": 43639,
-        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererCoverV4-20250211.hex",
+        "url": "https://your-username.github.io/wanderer-linux-updater/firmwares/WandererCoverV4-20250211.hex",
         "version": "2025-02-11",
         "version_date": "20250211"
       },
@@ -69,7 +108,7 @@
         "filename": "WandererCoverV4-20241102.hex",
         "original_url": null,
         "size": 38014,
-        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererCoverV4-20241102.hex",
+        "url": "https://your-username.github.io/wanderer-linux-updater/firmwares/WandererCoverV4-20241102.hex",
         "version": "2024-11-02",
         "version_date": "20241102"
       }
@@ -81,10 +120,23 @@
           "baud_rate": 115200,
           "programmer": "arduino"
         },
+        "filename": "WandererCoverV4Pro-20250504.hex",
+        "original_url": null,
+        "size": 33093,
+        "url": "https://your-username.github.io/wanderer-linux-updater/firmwares/WandererCoverV4Pro-20250504.hex",
+        "version": "2025-05-04",
+        "version_date": "20250504"
+      },
+      {
+        "device_config": {
+          "avr_device": "m168p",
+          "baud_rate": 115200,
+          "programmer": "arduino"
+        },
         "filename": "WandererCoverV4Pro-20250203.hex",
         "original_url": null,
         "size": 28224,
-        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererCoverV4Pro-20250203.hex",
+        "url": "https://your-username.github.io/wanderer-linux-updater/firmwares/WandererCoverV4Pro-20250203.hex",
         "version": "2025-02-03",
         "version_date": "20250203"
       },
@@ -97,7 +149,7 @@
         "filename": "WandererCoverV4Pro-20241111.hex",
         "original_url": null,
         "size": 27341,
-        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererCoverV4Pro-20241111.hex",
+        "url": "https://your-username.github.io/wanderer-linux-updater/firmwares/WandererCoverV4Pro-20241111.hex",
         "version": "2024-11-11",
         "version_date": "20241111"
       }
@@ -112,7 +164,7 @@
         "filename": "WandererDewTerminator-20240410.hex",
         "original_url": null,
         "size": 29845,
-        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererDewTerminator-20240410.hex",
+        "url": "https://your-username.github.io/wanderer-linux-updater/firmwares/WandererDewTerminator-20240410.hex",
         "version": "2024-04-10",
         "version_date": "20240410"
       }
@@ -127,7 +179,7 @@
         "filename": "WandererETA54-20250613.hex",
         "original_url": null,
         "size": 42117,
-        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererETA54-20250613.hex",
+        "url": "https://your-username.github.io/wanderer-linux-updater/firmwares/WandererETA54-20250613.hex",
         "version": "2025-06-13",
         "version_date": "20250613"
       },
@@ -140,7 +192,7 @@
         "filename": "WandererETA54-20250318.hex",
         "original_url": null,
         "size": 42739,
-        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererETA54-20250318.hex",
+        "url": "https://your-username.github.io/wanderer-linux-updater/firmwares/WandererETA54-20250318.hex",
         "version": "2025-03-18",
         "version_date": "20250318"
       },
@@ -153,7 +205,7 @@
         "filename": "WandererETA54-20250317.hex",
         "original_url": null,
         "size": 42731,
-        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererETA54-20250317.hex",
+        "url": "https://your-username.github.io/wanderer-linux-updater/firmwares/WandererETA54-20250317.hex",
         "version": "2025-03-17",
         "version_date": "20250317"
       }
@@ -165,10 +217,23 @@
           "baud_rate": 115200,
           "programmer": "arduino"
         },
+        "filename": "WandererEclipse-20250404.hex",
+        "original_url": null,
+        "size": 20211,
+        "url": "https://your-username.github.io/wanderer-linux-updater/firmwares/WandererEclipse-20250404.hex",
+        "version": "2025-04-04",
+        "version_date": "20250404"
+      },
+      {
+        "device_config": {
+          "avr_device": "m168p",
+          "baud_rate": 115200,
+          "programmer": "arduino"
+        },
         "filename": "WandererEclipse-20240410.hex",
         "original_url": null,
         "size": 18640,
-        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererEclipse-20240410.hex",
+        "url": "https://your-username.github.io/wanderer-linux-updater/firmwares/WandererEclipse-20240410.hex",
         "version": "2024-04-10",
         "version_date": "20240410"
       }
@@ -183,7 +248,7 @@
         "filename": "WandererRotatorLiteV1-20240403.hex",
         "original_url": null,
         "size": 26171,
-        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererRotatorLiteV1-20240403.hex",
+        "url": "https://your-username.github.io/wanderer-linux-updater/firmwares/WandererRotatorLiteV1-20240403.hex",
         "version": "2024-04-03",
         "version_date": "20240403"
       }
@@ -198,7 +263,7 @@
         "filename": "WandererRotatorLiteV2-20250222.hex",
         "original_url": null,
         "size": 32438,
-        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererRotatorLiteV2-20250222.hex",
+        "url": "https://your-username.github.io/wanderer-linux-updater/firmwares/WandererRotatorLiteV2-20250222.hex",
         "version": "2025-02-22",
         "version_date": "20250222"
       },
@@ -211,7 +276,7 @@
         "filename": "WandererRotatorLiteV2-20240226.hex",
         "original_url": null,
         "size": 31035,
-        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererRotatorLiteV2-20240226.hex",
+        "url": "https://your-username.github.io/wanderer-linux-updater/firmwares/WandererRotatorLiteV2-20240226.hex",
         "version": "2024-02-26",
         "version_date": "20240226"
       }
@@ -226,7 +291,7 @@
         "filename": "WandererRotatorMini-20250222.hex",
         "original_url": null,
         "size": 32434,
-        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererRotatorMini-20250222.hex",
+        "url": "https://your-username.github.io/wanderer-linux-updater/firmwares/WandererRotatorMini-20250222.hex",
         "version": "2025-02-22",
         "version_date": "20250222"
       },
@@ -239,7 +304,7 @@
         "filename": "WandererRotatorMini-20240226.hex",
         "original_url": null,
         "size": 31031,
-        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererRotatorMini-20240226.hex",
+        "url": "https://your-username.github.io/wanderer-linux-updater/firmwares/WandererRotatorMini-20240226.hex",
         "version": "2024-02-26",
         "version_date": "20240226"
       }
@@ -254,7 +319,7 @@
         "filename": "WandererRotatorProV1-20240226.hex",
         "original_url": null,
         "size": 29517,
-        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererRotatorProV1-20240226.hex",
+        "url": "https://your-username.github.io/wanderer-linux-updater/firmwares/WandererRotatorProV1-20240226.hex",
         "version": "2024-02-26",
         "version_date": "20240226"
       }
@@ -269,7 +334,7 @@
         "filename": "WandererRotatorProV2-20250222.hex",
         "original_url": null,
         "size": 32164,
-        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererRotatorProV2-20250222.hex",
+        "url": "https://your-username.github.io/wanderer-linux-updater/firmwares/WandererRotatorProV2-20250222.hex",
         "version": "2025-02-22",
         "version_date": "20250222"
       },
@@ -282,12 +347,12 @@
         "filename": "WandererRotatorProV2-20240520.hex",
         "original_url": null,
         "size": 30765,
-        "url": "https://grm.github.io/wanderer-linux-updater/firmwares/WandererRotatorProV2-20240520.hex",
+        "url": "https://your-username.github.io/wanderer-linux-updater/firmwares/WandererRotatorProV2-20240520.hex",
         "version": "2024-05-20",
         "version_date": "20240520"
       }
     ]
   },
-  "last_updated": "2025-07-12T22:57:07.259056",
+  "last_updated": "2025-07-19T10:10:26.860821",
   "source_url": null
 }
