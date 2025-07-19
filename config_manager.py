@@ -31,8 +31,8 @@ class DeviceConfig:
     avr_device: str
     programmer: str
     baud_rate: int
-    handshake_command: Optional[str] = None
     handshake_response: str
+    handshake_command: Optional[str] = None
     handshake_baud_rate: Optional[int] = None
 
 
