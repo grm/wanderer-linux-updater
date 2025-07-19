@@ -21,7 +21,19 @@ git clone https://github.com/your-username/wanderer-linux-updater.git
 cd wanderer-linux-updater
 ```
 
-2. Install dependencies using pipenv :
+2. Install avrdude (required for firmware updates) :
+
+**On Ubuntu/Debian :**
+```bash
+sudo apt-get install avrdude
+```
+
+**On Arch Linux :**
+```bash
+sudo pacman -S avrdude
+```
+
+3. Install dependencies using pipenv :
 ```bash
 pipenv install
 ```
