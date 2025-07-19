@@ -411,8 +411,9 @@ def _log_device_test_info(device_config, port: str, detection_baud_rate: int):
             rprint(f"[yellow][DEBUG] Device has no handshake_command - waiting for automatic response")
 
 
-def test_device_connection(port: str, device_config) -> bool:
-    """Test if device is connected and responding on the selected port."""
+def test_device_connection(port: str, device_config) -> tuple[bool, str]:
+    """Test if device is connected and responding on the selected port.
+    Returns (success, reason) where reason is empty string on success."""
     rprint(f"[blue]Testing connection to {device_config.name} on {port}...[/blue]")
     
     # Use handshake_baud_rate if available, otherwise use baud_rate
@@ -437,32 +438,34 @@ def test_device_connection(port: str, device_config) -> bool:
                 from rich.prompt import Confirm
                 if not Confirm.ask("Do you want to continue anyway?", default=False):
                     rprint("[blue]Update cancelled by user.[/blue]")
-                    return False
+                    return False, "device_mismatch_cancelled"
                 else:
                     rprint("[yellow]Proceeding with update (user confirmed)...[/yellow]")
             
             # Now proceed with the normal connection test
             if device_config.handshake_command:
                 # Case 1: Device has handshake_command - send it and wait for response
-                return _test_handshake_with_command(ser, device_config, port)
+                success = _test_handshake_with_command(ser, device_config, port)
+                return success, "" if success else "handshake_failed"
             else:
                 # Case 2: Device has no handshake_command - wait for automatic response
-                return _test_automatic_response(ser, device_config, port)
+                success = _test_automatic_response(ser, device_config, port)
+                return success, "" if success else "no_response"
         
         finally:
             ser.close()
             
     except Exception as e:
         if DEBUG_MODE:
-            rprint(f"[yellow][DEBUG] Exception during device testing: {e}")
+            rprint(f"[yellow][DEBUG] Exception during device testing: {e}[/yellow]")
         rprint(f"[red]Error testing connection to {device_config.name} on {port}: {e}[/red]")
         rprint("[blue]You can still proceed with the update if you're sure the device is connected.[/blue]")
-        return False
+        return False, f"exception:{str(e)}"
     
     # If we get here, no device was detected
     rprint(f"[yellow]⚠ No {device_config.name} detected on {port}[/yellow]")
     rprint("[blue]You can still proceed with the update if you're sure the device is connected.[/blue]")
-    return False
+    return False, "no_device_detected"
 
 
 def main(firmware_url=None, firmware_file=None, github_repo=None, config_file="config.yml"):
@@ -524,10 +527,16 @@ def main(firmware_url=None, firmware_file=None, github_repo=None, config_file="c
     
     # Step 3: Test device connection (optional)
     rprint("[blue]Step 3: Test device connection[/blue]")
-    connection_test_result = test_device_connection(port, device_config)
+    connection_test_result, failure_reason = test_device_connection(port, device_config)
     
     if not connection_test_result:
-        rprint("[yellow]⚠️  Device connection test failed or device mismatch detected![/yellow]")
+        # If user already cancelled due to device mismatch, don't ask again
+        if failure_reason == "device_mismatch_cancelled":
+            rprint("[blue]Update cancelled due to device mismatch.[/blue]")
+            return
+        
+        # For other failures, show the general warning and ask for confirmation
+        rprint("[yellow]⚠️  Device connection test failed![/yellow]")
         rprint("[yellow]  This could mean:[/yellow]")
         rprint("[yellow]    - The wrong device is connected[/yellow]")
         rprint("[yellow]    - The device is not in bootloader mode[/yellow]")
